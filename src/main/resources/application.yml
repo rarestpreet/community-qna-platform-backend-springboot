@@ -1,0 +1,16 @@
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: HearMeOut_Backend
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+
