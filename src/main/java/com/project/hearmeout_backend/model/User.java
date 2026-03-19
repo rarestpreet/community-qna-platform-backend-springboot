@@ -3,7 +3,6 @@ package com.project.hearmeout_backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,11 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
-
-    @Id
-    @Column(unique = true, nullable = false)
-    private Long id;
+public class User extends BaseModel {
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -34,10 +29,6 @@ public class User {
     @Builder.Default
     private int reputation = 0;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     private String emailVerifyOtp;
     private LocalDateTime emailVerifyOtpExpireAt;
     private String passwordChangeOtp;
@@ -50,7 +41,7 @@ public class User {
     private boolean isAccountVerified = false;
 
     @Builder.Default
-    private boolean isAccountActive = true;
+    private boolean isAccountTerminated = false;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
