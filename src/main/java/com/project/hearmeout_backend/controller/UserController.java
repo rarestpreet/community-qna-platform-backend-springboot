@@ -1,11 +1,10 @@
 package com.project.hearmeout_backend.controller;
 
-import com.project.hearmeout_backend.dto.request.SecurityRequest.RegisterRequestDTO;
-import com.project.hearmeout_backend.dto.request.UserRequest.UserProfileRequestDTO;
-import com.project.hearmeout_backend.dto.response.UserResponse.UserAnswerResponseDTO;
-import com.project.hearmeout_backend.dto.response.UserResponse.UserCommentResponseDTO;
-import com.project.hearmeout_backend.dto.response.UserResponse.UserProfileResponseDTO;
-import com.project.hearmeout_backend.dto.response.UserResponse.UserQuestionResponseDTO;
+import com.project.hearmeout_backend.dto.request.user_request.UserProfileRequestDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserCommentResponseDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
@@ -26,15 +25,17 @@ public class UserController {
 
     private final UserService userService;
 
+
     @GetMapping("")
     public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username)
             throws UserNotFoundException {
+        //replace with authentication token subject when using security
         UserProfileResponseDTO profile = userService.getUserProfile(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(profile);
     }
 
-    @GetMapping("/posts")
+    @GetMapping("/questions")
     public ResponseEntity<@NonNull List<UserQuestionResponseDTO>> userQuestions(@PathVariable String username)
             throws UserNotFoundException {
         List<UserQuestionResponseDTO> userQuestions = userService.getUserQuestions(username);
@@ -58,7 +59,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
-    @PutMapping("/update")
+    @PutMapping("")
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
                                                              @Valid @RequestBody UserProfileRequestDTO userProfileRequestDTO)
             throws UserNotFoundException, EmailAlreadyExistException, UsernameAlreadyExistException {
@@ -67,7 +68,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully");
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username)
             throws UserNotFoundException {
         userService.terminateUserAccount(username);

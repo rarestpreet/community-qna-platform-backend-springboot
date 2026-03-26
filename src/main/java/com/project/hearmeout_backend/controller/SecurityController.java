@@ -43,11 +43,11 @@ public class SecurityController {
 
     @PostMapping("login")
     public ResponseEntity<@NonNull String> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        String message = securityService.authenticateUser(loginRequestDTO);
+        ResponseCookie cookie = securityService.authenticateUser(loginRequestDTO);
 
         return ResponseEntity.status(HttpStatus.OK)
-                // .header(HttpHeaders.SET_COOKIE, cookie)
-                .body(message);
+                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("User logged in successfully: ");
     }
 
 }
