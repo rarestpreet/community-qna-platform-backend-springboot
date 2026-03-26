@@ -6,6 +6,7 @@ import com.project.hearmeout_backend.exception.PostNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.service.CommentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,9 +41,9 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<@NonNull String> updateComment(
             @PathVariable Long commentId,
-            @Valid @RequestBody CommentRequestDTO commentRequestDTO
+            @RequestBody String body
     ) throws CommentNotFoundException {
-        commentService.updateCommentBody(commentId, commentRequestDTO);
+        commentService.updateCommentBody(commentId, body);
 
         return ResponseEntity.status(HttpStatus.OK).body("Comment was updated successfully");
     }

@@ -10,6 +10,7 @@ import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.User;
 import com.project.hearmeout_backend.repository.CommentRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +50,10 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateCommentBody(Long commentId, CommentRequestDTO commentRequestDTO)
+    public void updateCommentBody(Long commentId, String body)
             throws CommentNotFoundException {
         Comment comment = checkAndGetComment(commentId);
-        comment.setBody(commentRequestDTO.getBody());
+        comment.setBody(body);
 
         commentRepo.save(comment);
     }
