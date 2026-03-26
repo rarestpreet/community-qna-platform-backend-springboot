@@ -4,17 +4,23 @@ import com.project.hearmeout_backend.dto.request.post_request.AnswerSubmitReques
 import com.project.hearmeout_backend.dto.request.post_request.QuestionSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO;
 import com.project.hearmeout_backend.exception.PostNotFoundException;
+import com.project.hearmeout_backend.exception.TagNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.mapper.PostMapper;
+import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.Tag;
 import com.project.hearmeout_backend.model.User;
+import com.project.hearmeout_backend.model.enums.PostStatus;
 import com.project.hearmeout_backend.repository.PostRepository;
 import com.project.hearmeout_backend.repository.TagRepository;
+import com.project.hearmeout_backend.repository.UserRepository;
 import com.project.hearmeout_backend.repository.VoteRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +32,7 @@ public class PostService {
     private final TagRepository tagRepo;
     private final UserService userService;
     private final VoteRepository voteRepo;
+    private final UserRepository userRepo;
 
     public Post checkAndGetPost(Long postId)
             throws PostNotFoundException {
@@ -35,14 +42,16 @@ public class PostService {
 
     @Transactional
     public void postNewQuestion(QuestionSubmitRequestDTO questionSubmitRequestDTO)
-            throws UserNotFoundException {
-        Post newPost = PostMapper.questionToPostEntity(questionSubmitRequestDTO);
+            throws UserNotFoundException, TagNotFoundException {
         User author = userService.checkAndGetUser(questionSubmitRequestDTO.getAuthorId());
-
-        // Resolve tags from the database using the provided IDs
         List<Tag> tags = tagRepo.findAllById(questionSubmitRequestDTO.getTagIds());
-        newPost.setTags(tags);
-        newPost.setAuthor(author);
+
+        if(tags.isEmpty() ||
+                questionSubmitRequestDTO.getTagIds().size() != tags.size()) {
+            throw new TagNotFoundException("Some tags do not exist");
+        }
+
+        Post newPost = PostMapper.questionToPostEntity(questionSubmitRequestDTO, author, tags);
 
         postRepo.save(newPost);
     }
@@ -50,21 +59,38 @@ public class PostService {
     @Transactional
     public void postNewAnswer(Long postId, AnswerSubmitRequestDTO answerSubmitRequestDTO)
             throws UserNotFoundException, PostNotFoundException {
-        Post newPost = PostMapper.answerToPostEntity(answerSubmitRequestDTO);
-
         Post parent = checkAndGetPost(postId);
+        parent.setPostStatus(PostStatus.ANSWERED);
+
         User author = userService.checkAndGetUser(answerSubmitRequestDTO.getAuthorId());
 
-        newPost.setAuthor(author);
-        newPost.setParent(parent);
-
+        Post newPost = PostMapper.answerToPostEntity(answerSubmitRequestDTO, parent, author);
         postRepo.save(newPost);
     }
 
     @Transactional
-    public QuestionPostResponseDTO getQuestionPost(Long postId, Long currUserId)
+    public QuestionPostResponseDTO getQuestionPost(Long postId, Authentication authentication)
             throws PostNotFoundException {
         Post currPost = checkAndGetPost(postId);
+
+        if (authentication == null ||
+                !authentication.isAuthenticated() ||
+                authentication instanceof AnonymousAuthenticationToken) {
+
+            return PostMapper.toQuestionPostResponseDTO(currPost, false, 0L);
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof CustomUserDetails userDetails)) {
+            return PostMapper.toQuestionPostResponseDTO(currPost, false, 0L);
+        }
+
+        User currUser = userRepo.findByEmail(userDetails.getUsername())
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found. Enter registered email")
+                );
+        Long currUserId = currUser.getId();
         boolean hasVoted = voteRepo.existsByPostIdAndUserId(postId, currUserId);
 
         return PostMapper.toQuestionPostResponseDTO(currPost, hasVoted, currUserId);
