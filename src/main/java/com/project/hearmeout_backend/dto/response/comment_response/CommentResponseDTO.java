@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 public class CommentResponseDTO {
     private Long commentId;
     private String body;
-    private Long postId;
     private Long authorId;
-    private boolean isEditable;
+    private Long postId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isEditable;
 }

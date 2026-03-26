@@ -10,7 +10,7 @@ import com.project.hearmeout_backend.model.User;
 import java.util.Objects;
 
 public class CommentMapper {
-    public static UserCommentResponseDTO toCommentDto(Comment comment) {
+    public static UserCommentResponseDTO toUserCommentResponseDto(Comment comment) {
         return UserCommentResponseDTO.builder()
                 .id(comment.getId())
                 .createdAt(comment.getCreatedAt())
