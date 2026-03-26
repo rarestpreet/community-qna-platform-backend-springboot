@@ -1,4 +1,4 @@
-package com.project.hearmeout_backend.dto.response.UserResponse;
+package com.project.hearmeout_backend.dto.response.user_response;
 
 import lombok.*;
 
@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class UserAnswerResponseDTO {
-    private Long id;
+    private Long postId;
     private String body;
-    private LocalDateTime date;
     private String status;
     private int score;
+    private LocalDateTime createdAt;
 }

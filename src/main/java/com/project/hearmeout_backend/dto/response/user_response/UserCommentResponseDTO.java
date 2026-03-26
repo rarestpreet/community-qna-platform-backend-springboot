@@ -1,4 +1,4 @@
-package com.project.hearmeout_backend.dto.response.UserResponse;
+package com.project.hearmeout_backend.dto.response.user_response;
 
 import lombok.Builder;
 import lombok.Data;
