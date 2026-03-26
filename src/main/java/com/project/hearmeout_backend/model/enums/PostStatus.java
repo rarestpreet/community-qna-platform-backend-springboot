@@ -4,6 +4,7 @@ public enum PostStatus {
     UNANSWERED,
     ANSWERED,
     ACCEPTED,
-    CLOSED
+    CLOSED,
+    UNREVIEWED
 }
 

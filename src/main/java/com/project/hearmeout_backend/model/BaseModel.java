@@ -28,6 +28,6 @@ public abstract class BaseModel {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime updatedBy;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }
