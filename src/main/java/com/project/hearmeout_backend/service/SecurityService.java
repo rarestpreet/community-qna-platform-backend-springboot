@@ -17,11 +17,12 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class SecurityService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
+    private final JwtService jwtService;
 
     @Transactional
     public void createNewUser(RegisterRequestDTO registerRequestDTO)
@@ -65,14 +67,10 @@ public class SecurityService {
                 .build();
     }
 
-    public String authenticateUser(@Valid LoginRequestDTO loginRequestDTO) {
+    public ResponseCookie authenticateUser(@Valid LoginRequestDTO loginRequestDTO) {
         Authentication auth;
-        try {
-            auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
+        auth = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -80,6 +78,15 @@ public class SecurityService {
         new HttpSessionSecurityContextRepository()
                 .saveContext(SecurityContextHolder.getContext(), httpServletRequest, httpServletResponse);
 
-        return "User logged in";
+        String jwtToken = jwtService.generateJwtToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+
+        // change secure value to true for prod
+        return ResponseCookie.from("token", jwtToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .maxAge(TimeUnit.MINUTES.toSeconds(30))
+                .build();
     }
 }
