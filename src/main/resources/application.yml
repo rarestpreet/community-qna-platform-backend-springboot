@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT}
   servlet:
     context-path: /api
 
@@ -10,9 +10,6 @@ spring:
     active: ${SPRING_ACTIVE_PROFILE}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#  make it false for prod
-  jpa:
-    open-in-view: true
 
 jwt:
   secret: ${SECRET_KEY}
