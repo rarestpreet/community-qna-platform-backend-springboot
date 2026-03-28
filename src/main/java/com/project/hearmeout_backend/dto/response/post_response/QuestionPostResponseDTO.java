@@ -1,5 +1,7 @@
 package com.project.hearmeout_backend.dto.response.post_response;
 
+import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
+import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import lombok.Builder;
 import lombok.Data;
 

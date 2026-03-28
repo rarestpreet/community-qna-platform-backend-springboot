@@ -2,32 +2,46 @@ package com.project.hearmeout_backend.mapper;
 
 import com.project.hearmeout_backend.dto.request.post_request.AnswerSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.request.post_request.QuestionSubmitRequestDTO;
-import com.project.hearmeout_backend.dto.response.post_response.*;
+import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.FeedAnswerResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.FeedPostResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO;
+import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO;
 import com.project.hearmeout_backend.model.Post;
+import com.project.hearmeout_backend.model.Tag;
+import com.project.hearmeout_backend.model.User;
+import com.project.hearmeout_backend.model.enums.PostStatus;
 import com.project.hearmeout_backend.model.enums.PostType;
 
 import java.util.List;
+import java.util.Objects;
+
+import static com.project.hearmeout_backend.mapper.CommentMapper.toCommentResponseDTO;
 
 public class PostMapper {
 
-    public static Post answerToPostEntity(AnswerSubmitRequestDTO answerSubmitRequestDTO) {
+    public static Post answerToPostEntity(AnswerSubmitRequestDTO answerSubmitRequestDTO, Post parent, User author) {
         return Post.builder()
                 .title(null)
                 .body(answerSubmitRequestDTO.getBody())
                 .postType(PostType.ANSWER)
-                .parent(null)
-                .author(null)
+                .parent(parent)
+                .author(author)
+                .postStatus(PostStatus.UNREVIEWED)
                 .build();
     }
 
-    public static Post questionToPostEntity(QuestionSubmitRequestDTO questionSubmitRequestDTO) {
+    public static Post questionToPostEntity(QuestionSubmitRequestDTO questionSubmitRequestDTO, User author, List<Tag> tags) {
         return Post.builder()
                 .title(questionSubmitRequestDTO.getTitle())
                 .body(questionSubmitRequestDTO.getBody())
                 .postType(PostType.QUESTION)
-                .author(null)
+                .author(author)
+                .tags(tags)
+                .body(questionSubmitRequestDTO.getBody())
+                .postStatus(PostStatus.UNANSWERED)
                 .build();
     }
 
@@ -52,14 +66,18 @@ public class PostMapper {
     }
 
     public static FeedPostResponseDTO toFeedPostResponseDTO(Post question) {
+        List<TagResponseDTO> tags = question.getTags().stream()
+                .map(TagMapper::toTagResponseDTO)
+                .toList();
+
         return FeedPostResponseDTO.builder()
                 .postId(question.getId())
-                .authorUsername(question.getAuthor().getUsername())
                 .authorId(question.getAuthor().getId())
                 .title(question.getTitle())
                 .score(question.getScore())
                 .createdAt(question.getCreatedAt())
                 .status(question.getPostStatus().toString())
+                .tags(tags)
                 .build();
     }
 
@@ -75,38 +93,20 @@ public class PostMapper {
                 .build();
     }
 
-    public static TagResponseDTO toTagResponseDTO(com.project.hearmeout_backend.model.Tag tag) {
-        return TagResponseDTO.builder()
-                .id(tag.getId())
-                .name(tag.getName())
-                .description(tag.getDescription())
-                .build();
-    }
-
-    public static CommentResponseDTO toCommentResponseDTO(com.project.hearmeout_backend.model.Comment comment) {
-        return CommentResponseDTO.builder()
-                .id(comment.getId())
-                .body(comment.getBody())
-                .authorUsername(comment.getAuthor().getUsername())
-                .createdAt(comment.getCreatedAt())
-                .build();
-    }
-
     public static QuestionPostResponseDTO toQuestionPostResponseDTO(Post question, boolean hasVoted, Long currUserId) {
         List<FeedAnswerResponseDTO> answers = question.getAnswers().stream()
                 .map(answer -> {
-                    // Check if the current user voted on this specific answer
                     boolean userVotedOnAnswer = answer.getVotes().stream()
-                            .anyMatch(vote -> vote.getUser().getId().equals(currUserId));
+                            .anyMatch(vote -> Objects.equals(vote.getUser().getId(), currUserId));
                     return PostMapper.toFeedAnswerResponseDTO(answer, userVotedOnAnswer);
                 }).toList();
 
         List<TagResponseDTO> tags = question.getTags().stream()
-                .map(PostMapper::toTagResponseDTO)
+                .map(TagMapper::toTagResponseDTO)
                 .toList();
 
         List<CommentResponseDTO> comments = question.getComments().stream()
-                .map(PostMapper::toCommentResponseDTO)
+                .map(comment -> toCommentResponseDTO(comment, currUserId))
                 .toList();
 
         return QuestionPostResponseDTO.builder()
