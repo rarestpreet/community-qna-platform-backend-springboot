@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth/")
 @RequiredArgsConstructor
 public class SecurityController {
 
@@ -47,7 +47,7 @@ public class SecurityController {
 
         return ResponseEntity.status(HttpStatus.OK)
                  .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("User logged in successfully: ");
+                .body("User logged in successfully");
     }
 
 }
