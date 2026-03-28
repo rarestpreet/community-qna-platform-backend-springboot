@@ -10,7 +10,8 @@ spring:
     active: ${SPRING_ACTIVE_PROFILE}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
 jwt:
   secret: ${SECRET_KEY}
 
