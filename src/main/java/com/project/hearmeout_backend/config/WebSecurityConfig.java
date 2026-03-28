@@ -30,14 +30,15 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         request
-                                .requestMatchers("/login", "/register", "/test/**", "/")
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/auth/**", "/test/**", "/")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET,  "/profile/**")
+                                .requestMatchers(HttpMethod.GET, "/profile/**")
                                 .permitAll()
                                 .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -47,7 +48,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authManager(AuthenticationConfiguration authConfig){
+    public AuthenticationManager authManager(AuthenticationConfiguration authConfig) {
         return authConfig.getAuthenticationManager();
     }
 }

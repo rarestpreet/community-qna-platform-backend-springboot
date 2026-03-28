@@ -3,8 +3,8 @@ package com.project.hearmeout_backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -12,10 +12,10 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsConfigurationSource corsConfiguration() {
+    public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration
-                .setAllowedOrigins(List.of("http://localhost:5173"));
+                .setAllowedOrigins(List.of("http://localhost:5173", "https://hearmeout-frontend.onrender.com"));
         corsConfiguration
                 .setAllowedMethods(List.of("PUT", "POST", "GET", "DELETE", "OPTIONS"));
         corsConfiguration
@@ -26,6 +26,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
-        return source;
+        //cors config requires corsfilter and not CorsConfigSources
+        return new CorsFilter(source);
     }
 }
