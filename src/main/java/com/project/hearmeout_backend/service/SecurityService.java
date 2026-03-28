@@ -58,7 +58,7 @@ public class SecurityService {
         }
         SecurityContextHolder.clearContext();
 
-        return ResponseCookie.from("JSESSIONID", "")
+        return ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .maxAge(0)
                 .secure(false)
@@ -68,8 +68,7 @@ public class SecurityService {
     }
 
     public ResponseCookie authenticateUser(@Valid LoginRequestDTO loginRequestDTO) {
-        Authentication auth;
-        auth = authManager.authenticate(
+        Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -84,7 +83,7 @@ public class SecurityService {
         return ResponseCookie.from("token", jwtToken)
                 .path("/")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .sameSite("Lax")
                 .maxAge(TimeUnit.MINUTES.toSeconds(30))
                 .build();

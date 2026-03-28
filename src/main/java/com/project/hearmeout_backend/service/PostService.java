@@ -43,7 +43,7 @@ public class PostService {
     @Transactional
     public void postNewQuestion(QuestionSubmitRequestDTO questionSubmitRequestDTO)
             throws UserNotFoundException, TagNotFoundException {
-        User author = userService.checkAndGetUser(questionSubmitRequestDTO.getAuthorId());
+        User author = userService.checkAndGetUserByUserId(questionSubmitRequestDTO.getAuthorId());
         List<Tag> tags = tagRepo.findAllById(questionSubmitRequestDTO.getTagIds());
 
         if(tags.isEmpty() ||
@@ -62,7 +62,7 @@ public class PostService {
         Post parent = checkAndGetPost(postId);
         parent.setPostStatus(PostStatus.ANSWERED);
 
-        User author = userService.checkAndGetUser(answerSubmitRequestDTO.getAuthorId());
+        User author = userService.checkAndGetUserByUserId(answerSubmitRequestDTO.getAuthorId());
 
         Post newPost = PostMapper.answerToPostEntity(answerSubmitRequestDTO, parent, author);
         postRepo.save(newPost);
@@ -82,14 +82,12 @@ public class PostService {
 
         Object principal = authentication.getPrincipal();
 
+        // why do we need this
         if (!(principal instanceof CustomUserDetails userDetails)) {
             return PostMapper.toQuestionPostResponseDTO(currPost, false, 0L);
         }
 
-        User currUser = userRepo.findByEmail(userDetails.getUsername())
-                .orElseThrow(() ->
-                        new UserNotFoundException("User not found. Enter registered email")
-                );
+        User currUser = userService.checkAndGetUserByEmail(userDetails.getUsername());
         Long currUserId = currUser.getId();
         boolean hasVoted = voteRepo.existsByPostIdAndUserId(postId, currUserId);
 

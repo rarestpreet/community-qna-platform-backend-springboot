@@ -26,7 +26,7 @@ public class VoteService {
                 voteRequestDTO.getUserId()
         ).orElse(null);
 
-        User user = userService.checkAndGetUser(voteRequestDTO.getUserId());
+        User user = userService.checkAndGetUserByUserId(voteRequestDTO.getUserId());
         Post post = postService.checkAndGetPost(voteRequestDTO.getPostId());
         VoteType newVoteType = voteRequestDTO.getVoteType();
 

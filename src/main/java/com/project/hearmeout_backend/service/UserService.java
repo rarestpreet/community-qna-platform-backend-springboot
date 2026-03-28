@@ -35,12 +35,12 @@ public class UserService {
 
     public UserProfileResponseDTO getUserProfile(String username)
             throws UserNotFoundException {
-        return UserMapper.toProfileDTO(checkAndGetUser(username));
+        return UserMapper.toProfileDTO(checkAndGetUserByUsername(username));
     }
 
     public List<UserQuestionResponseDTO> getUserQuestions(String username)
             throws UserNotFoundException {
-        User currUser = checkAndGetUser(username);
+        User currUser = checkAndGetUserByUsername(username);
         List<Post> questions = postRepo.findByAuthor_IdAndPostType(currUser.getId(), PostType.QUESTION);
 
         return questions.stream()
@@ -48,21 +48,27 @@ public class UserService {
                 .toList();
     }
 
-    public User checkAndGetUser(Long userId)
+    public User checkAndGetUserByUserId(Long userId)
             throws UserNotFoundException {
         return userRepo.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
-    public User checkAndGetUser(String username)
+    public User checkAndGetUserByUsername(String username)
             throws UserNotFoundException {
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
     }
 
+    public User checkAndGetUserByEmail(String email)
+            throws UserNotFoundException {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+    }
+
     public List<UserAnswerResponseDTO> getUserAnswers(String username)
             throws UserNotFoundException {
-        User currUser = checkAndGetUser(username);
+        User currUser = checkAndGetUserByUsername(username);
         List<Post> answers = postRepo.findByAuthor_IdAndPostType(currUser.getId(), PostType.ANSWER);
 
         return answers.stream()
@@ -72,7 +78,7 @@ public class UserService {
 
     public List<UserCommentResponseDTO> getUserComments(String username)
             throws UserNotFoundException {
-        User currUser = checkAndGetUser(username);
+        User currUser = checkAndGetUserByUsername(username);
         List<Comment> comments = commentRepo.findAllByAuthor_Id(currUser.getId());
 
         return comments.stream()
@@ -83,7 +89,7 @@ public class UserService {
     @Transactional
     public void updateUserDetails(String username, UserProfileRequestDTO userProfileRequestDTO)
             throws UserNotFoundException, UsernameAlreadyExistException, EmailAlreadyExistException {
-        User currUser = checkAndGetUser(username);
+        User currUser = checkAndGetUserByUsername(username);
 
         if (!Objects.equals(currUser.getUsername(), userProfileRequestDTO.getUsername()) &&
                 userRepo.existsByUsername(userProfileRequestDTO.getUsername())) {
@@ -105,7 +111,7 @@ public class UserService {
     @Transactional
     public void terminateUserAccount(String username)
             throws UserNotFoundException {
-        User currUser = checkAndGetUser(username);
+        User currUser = checkAndGetUserByUsername(username);
 
         currUser.setAccountTerminated(true);
         currUser.setUsername("DELETED_"+currUser.getUsername());

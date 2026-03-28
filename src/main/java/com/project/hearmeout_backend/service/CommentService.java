@@ -10,7 +10,6 @@ import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.User;
 import com.project.hearmeout_backend.repository.CommentRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class CommentService {
     @Transactional
     public void createNewComment(CommentRequestDTO commentRequestDTO)
             throws UserNotFoundException, PostNotFoundException {
-        User author = userService.checkAndGetUser(commentRequestDTO.getAuthorId());
+        User author = userService.checkAndGetUserByUserId(commentRequestDTO.getAuthorId());
         Post post = postService.checkAndGetPost(commentRequestDTO.getPostId());
 
         Comment newComment = CommentMapper.toCommentEntity(commentRequestDTO, post, author);
