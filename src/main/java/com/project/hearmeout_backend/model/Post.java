@@ -18,10 +18,11 @@ import java.util.List;
 public class Post extends BaseModel {
 
     /** Only QUESTION posts have a title */
-    @Column(length = 300)
+    @Column(length = 100)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
+    @Column(nullable = false)
     private String body;
 
     @Enumerated(EnumType.STRING)

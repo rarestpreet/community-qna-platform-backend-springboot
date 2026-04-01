@@ -12,7 +12,8 @@ import lombok.*;
 @Builder
 public class Comment extends BaseModel{
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
+    @Column(nullable = false)
     private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)

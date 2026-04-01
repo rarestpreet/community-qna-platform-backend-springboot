@@ -32,7 +32,6 @@ public class CommentMapper {
                 .body(comment.getBody())
                 .authorId(comment.getAuthor().getId())
                 .postId(comment.getPost().getId())
-                .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .isEditable(Objects.equals(comment.getAuthor().getId(), currUserId))
                 .build();

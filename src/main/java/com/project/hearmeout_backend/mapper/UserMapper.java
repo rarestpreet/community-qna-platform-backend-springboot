@@ -4,16 +4,16 @@ import com.project.hearmeout_backend.dto.request.security_request.RegisterReques
 import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
 import com.project.hearmeout_backend.model.User;
-import org.jspecify.annotations.Nullable;
 
 public class UserMapper {
 
-    public static UserProfileResponseDTO toProfileDTO(User user) {
+    public static UserProfileResponseDTO toProfileDTO(User user, Long userId) {
         return UserProfileResponseDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .createdAt(user.getCreatedAt())
                 .reputation(user.getReputation())
+                .isOperable(userId.equals(user.getId()))
                 .build();
     }
 
@@ -25,7 +25,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static @Nullable HomeUserProfileResponseDTO toHomeUserProfileResponseDTO(User user) {
+    public static HomeUserProfileResponseDTO toHomeUserProfileResponseDTO(User user) {
         return HomeUserProfileResponseDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())

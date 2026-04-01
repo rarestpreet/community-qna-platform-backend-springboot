@@ -15,6 +15,7 @@ public class Tag extends BaseModel{
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
+    @Column
     private String description;
 }

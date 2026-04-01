@@ -81,13 +81,18 @@ public class PostMapper {
                 .build();
     }
 
-    public static FeedAnswerResponseDTO toFeedAnswerResponseDTO(Post answer, boolean hasVoted) {
+    public static FeedAnswerResponseDTO toFeedAnswerResponseDTO(Post answer, boolean hasVoted, Long currUserId) {
+        List<CommentResponseDTO> commentList = answer.getComments().stream()
+                .map(comment -> CommentMapper.toCommentResponseDTO(comment, currUserId))
+                .toList();
+
         return FeedAnswerResponseDTO.builder()
                 .body(answer.getBody())
                 .postId(answer.getId())
                 .authorId(answer.getAuthor().getId())
                 .voted(hasVoted)
                 .score(answer.getScore())
+                .comments(commentList)
                 .createdAt(answer.getCreatedAt())
                 .status(answer.getPostStatus().toString())
                 .build();
@@ -98,7 +103,7 @@ public class PostMapper {
                 .map(answer -> {
                     boolean userVotedOnAnswer = answer.getVotes().stream()
                             .anyMatch(vote -> Objects.equals(vote.getUser().getId(), currUserId));
-                    return PostMapper.toFeedAnswerResponseDTO(answer, userVotedOnAnswer);
+                    return PostMapper.toFeedAnswerResponseDTO(answer, userVotedOnAnswer, currUserId);
                 }).toList();
 
         List<TagResponseDTO> tags = question.getTags().stream()
