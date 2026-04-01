@@ -1,11 +1,15 @@
 package com.project.hearmeout_backend.dto.response.post_response;
 
+import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+@Getter
+@AllArgsConstructor
 @Builder
 public class FeedAnswerResponseDTO {
     private Long postId;
@@ -14,5 +18,6 @@ public class FeedAnswerResponseDTO {
     private String body;
     private LocalDateTime createdAt;
     private String status;
+    private List<CommentResponseDTO> comments;
     private int score;
 }

@@ -2,12 +2,10 @@ package com.project.hearmeout_backend.dto.response.user_response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class HomeUserProfileResponseDTO {
         private String username;

@@ -1,12 +1,16 @@
 package com.project.hearmeout_backend.dto.response.post_response;
 
 import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@AllArgsConstructor
 @Builder
 public class FeedPostResponseDTO {
     private Long postId;

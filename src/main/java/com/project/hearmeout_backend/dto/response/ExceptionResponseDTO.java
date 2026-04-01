@@ -5,8 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@Data
+@Getter
 @Builder
+@AllArgsConstructor
 public class ExceptionResponseDTO {
     private int status;
     private LocalDateTime timestamp;

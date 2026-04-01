@@ -1,9 +1,11 @@
 package com.project.hearmeout_backend.dto.response.tag_response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 @Builder
 public class TagResponseDTO {
     private Long tagId;

@@ -1,11 +1,13 @@
 package com.project.hearmeout_backend.dto.response.user_response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@AllArgsConstructor
 @Builder
 public class UserCommentResponseDTO {
     private Long id;

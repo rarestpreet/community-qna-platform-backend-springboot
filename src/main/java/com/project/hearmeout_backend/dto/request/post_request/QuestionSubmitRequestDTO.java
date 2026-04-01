@@ -2,16 +2,13 @@ package com.project.hearmeout_backend.dto.request.post_request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class QuestionSubmitRequestDTO {
 
@@ -22,9 +19,6 @@ public class QuestionSubmitRequestDTO {
     @NotBlank(message = "Description is required")
     @Size(min = 50, max = 500, message = "Describe question in 50 to 500 characters")
     private String body;
-
-    @NotNull
-    private Long authorId;
 
     @NotEmpty(message = "At least one tag is required")
     @Size(min = 1, max = 10, message = "Must contain 1 to 10 tags")

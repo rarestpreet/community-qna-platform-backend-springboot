@@ -1,10 +1,13 @@
 package com.project.hearmeout_backend.dto.response.user_response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@AllArgsConstructor
 @Builder
 public class UserQuestionResponseDTO {
     private Long postId;
@@ -13,3 +16,4 @@ public class UserQuestionResponseDTO {
     private LocalDateTime createdAt;
     private String status;
 }
+
