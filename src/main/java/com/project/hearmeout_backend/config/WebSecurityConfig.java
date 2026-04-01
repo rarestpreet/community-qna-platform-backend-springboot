@@ -15,9 +15,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebMvc
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
@@ -31,8 +33,15 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers("/auth/**", "/test/**", "/")
-                                .permitAll()
+                                .requestMatchers(
+                                        "/auth/**",
+                                        "/test/**",
+                                        "/",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/post/*"
+                                ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/profile/**")
                                 .permitAll()
                                 .anyRequest().authenticated())
