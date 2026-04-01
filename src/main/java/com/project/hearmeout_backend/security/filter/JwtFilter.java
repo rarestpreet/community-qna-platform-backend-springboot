@@ -33,10 +33,11 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = null;
 
-        if(request.getCookies()!=null){
-            for(Cookie cookie : request.getCookies()){
-                if(cookie.getName().equals("token")){
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("token")) {
                     token = cookie.getValue();
+                    break;
                 }
             }
         }
@@ -45,25 +46,26 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        try {
+            String username = jwtService.extractUsername(token);
 
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
+                CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-        String username = jwtService.extractUsername(token);
+                boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
 
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
-            CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                if (isTokenValid) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
 
-            boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
-
-            if(isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // add log
         }
-
         filterChain.doFilter(request, response);
     }
 }

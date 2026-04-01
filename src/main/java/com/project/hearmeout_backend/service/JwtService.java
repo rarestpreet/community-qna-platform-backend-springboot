@@ -20,9 +20,10 @@ public class JwtService {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String generateJwtToken(String username, String password) {
+    public String generateJwtToken(String username, Long userId) {
         return Jwts.builder()
                 .subject(username)
+                .claim("userId", String.valueOf(userId))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30)))
                 .signWith(secretKey)
@@ -39,6 +40,10 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return parseToken(token).getSubject();
+    }
+
+    public Long extractUserId(String token) {
+        return Long.valueOf(parseToken(token).get("userId", String.class));
     }
 
     public Date extractExpiration(String token) {
