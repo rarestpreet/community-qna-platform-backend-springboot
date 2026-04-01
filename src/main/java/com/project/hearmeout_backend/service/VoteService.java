@@ -20,13 +20,13 @@ public class VoteService {
     private final PostService postService;
 
     @Transactional
-    public void handleVote(VoteRequestDTO voteRequestDTO) {
+    public void handleVote(VoteRequestDTO voteRequestDTO, Long userId) {
         Vote existingVote = voteRepo.findByPostIdAndUserId(
                 voteRequestDTO.getPostId(),
-                voteRequestDTO.getUserId()
+                userId
         ).orElse(null);
 
-        User user = userService.checkAndGetUserByUserId(voteRequestDTO.getUserId());
+        User user = userService.checkAndGetUserByUserId(userId);
         Post post = postService.checkAndGetPost(voteRequestDTO.getPostId());
         VoteType newVoteType = voteRequestDTO.getVoteType();
 
@@ -41,7 +41,7 @@ public class VoteService {
 
         if (oldVoteType == newVoteType) {
             post.setScore(post.getScore() + (oldVoteType == VoteType.UPVOTE ? -1 : 1));
-            voteRepo.removeVoteByPostIdAndUserId(post.getId(), user.getId());
+            voteRepo.removeVoteByPostIdAndUserId(post.getId(), userId);
         } else {
             post.setScore(post.getScore() + (newVoteType == VoteType.UPVOTE ? 2 : -2));
             existingVote.setVoteType(newVoteType);

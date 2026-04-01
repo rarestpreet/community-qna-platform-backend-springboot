@@ -8,12 +8,14 @@ import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResp
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
+import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,12 +27,11 @@ public class UserController {
 
     private final UserService userService;
 
-
     @GetMapping("")
-    public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username)
+    public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username,
+                                                                       @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        //replace with authentication token subject when using security
-        UserProfileResponseDTO profile = userService.getUserProfile(username);
+        UserProfileResponseDTO profile = userService.getUserProfile(username, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(profile);
     }
@@ -61,17 +62,19 @@ public class UserController {
 
     @PutMapping("")
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
-                                                             @Valid @RequestBody UserProfileRequestDTO userProfileRequestDTO)
+                                                             @Valid @RequestBody UserProfileRequestDTO userProfileRequestDTO,
+                                                             @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, EmailAlreadyExistException, UsernameAlreadyExistException {
-        userService.updateUserDetails(username, userProfileRequestDTO);
+        userService.updateUserDetails(username, userProfileRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully");
     }
 
     @DeleteMapping("")
-    public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username)
+    public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        userService.terminateUserAccount(username);
+        userService.terminateUserAccount(username, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Account deleted Successfully");
     }

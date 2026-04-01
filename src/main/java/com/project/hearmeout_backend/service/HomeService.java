@@ -4,17 +4,12 @@ import com.project.hearmeout_backend.dto.response.post_response.FeedPostResponse
 import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileResponseDTO;
 import com.project.hearmeout_backend.mapper.PostMapper;
 import com.project.hearmeout_backend.mapper.UserMapper;
-import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.enums.PostType;
 import com.project.hearmeout_backend.repository.PostRepository;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +22,7 @@ public class HomeService {
     private final PostRepository postRepo;
     private final UserService userService;
 
-    public @NonNull List<FeedPostResponseDTO> generateFeed(int page, Integer userId) {
+    public List<FeedPostResponseDTO> generateFeed(int page, Long userId) {
         Pageable pageable = PageRequest.of(page, 10);
         List<Post> questions = new ArrayList<>();
 
@@ -41,20 +36,10 @@ public class HomeService {
                 .toList();
     }
 
-    public @Nullable HomeUserProfileResponseDTO getUserProfile(Authentication authentication) {
-        if (authentication == null ||
-                !authentication.isAuthenticated() ||
-        authentication instanceof AnonymousAuthenticationToken) {
-            return null;
+    public HomeUserProfileResponseDTO getUserProfile(Long userId) {
+        if(userId==null){
+            return new HomeUserProfileResponseDTO(null, null, false);
         }
-
-        Object principal = authentication.getPrincipal();
-
-        if(!(principal instanceof CustomUserDetails userDetails)) {
-            return null;
-        }
-        String email = userDetails.getUsername();
-
-        return UserMapper.toHomeUserProfileResponseDTO(userService.checkAndGetUserByEmail(email));
+        return UserMapper.toHomeUserProfileResponseDTO(userService.checkAndGetUserByUserId(userId));
     }
 }

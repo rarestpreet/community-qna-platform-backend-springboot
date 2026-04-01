@@ -6,6 +6,7 @@ import com.project.hearmeout_backend.dto.response.user_response.UserCommentRespo
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
+import com.project.hearmeout_backend.exception.InvalidOperationException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
 import com.project.hearmeout_backend.mapper.CommentMapper;
@@ -20,10 +21,10 @@ import com.project.hearmeout_backend.repository.PostRepository;
 import com.project.hearmeout_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +33,11 @@ public class UserService {
     private final UserRepository userRepo;
     private final PostRepository postRepo;
     private final CommentRepository commentRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserProfileResponseDTO getUserProfile(String username)
+    public UserProfileResponseDTO getUserProfile(String username, Long userId)
             throws UserNotFoundException {
-        return UserMapper.toProfileDTO(checkAndGetUserByUsername(username));
+        return UserMapper.toProfileDTO(checkAndGetUserByUsername(username), userId);
     }
 
     public List<UserQuestionResponseDTO> getUserQuestions(String username)
@@ -87,11 +89,15 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserDetails(String username, UserProfileRequestDTO userProfileRequestDTO)
+    public void updateUserDetails(String username, UserProfileRequestDTO userProfileRequestDTO, Long userId)
             throws UserNotFoundException, UsernameAlreadyExistException, EmailAlreadyExistException {
         User currUser = checkAndGetUserByUsername(username);
 
-        if (!Objects.equals(currUser.getUsername(), userProfileRequestDTO.getUsername()) &&
+        if(!currUser.getId().equals(userId)){
+            throw new InvalidOperationException("Operation only allowed for account owner");
+        }
+
+        if (!currUser.getUsername().equals(userProfileRequestDTO.getUsername()) &&
                 userRepo.existsByUsername(userProfileRequestDTO.getUsername())) {
             throw new UsernameAlreadyExistException("Username is already taken");
         }
@@ -102,25 +108,27 @@ public class UserService {
 
         currUser.setUsername(userProfileRequestDTO.getUsername());
         currUser.setEmail(userProfileRequestDTO.getEmail());
-        currUser.setPassword(userProfileRequestDTO.getPassword());
+        currUser.setPassword(passwordEncoder.encode(userProfileRequestDTO.getPassword()));
         currUser.setEmailVerified(false);
 
         userRepo.save(currUser);
     }
 
     @Transactional
-    public void terminateUserAccount(String username)
+    public void terminateUserAccount(String username, Long userId)
             throws UserNotFoundException {
         User currUser = checkAndGetUserByUsername(username);
 
+        if(!currUser.getId().equals(userId)){
+            throw new InvalidOperationException("Operation only allowed for account owner");
+        }
+
         currUser.setAccountTerminated(true);
-        currUser.setUsername("DELETED_"+currUser.getUsername());
-        currUser.setEmail("DELETED_"+currUser.getEmail());
-        currUser.setPassword("DELETED_"+currUser.getPassword());
+        currUser.setUsername(currUser.getUsername());
+        currUser.setEmail("DELETED"+currUser.getEmail());
+        currUser.setPassword(currUser.getPassword());
         currUser.setEmailVerified(false);
-        currUser.setReputation(0);
 
         userRepo.save(currUser);
     }
-
 }
