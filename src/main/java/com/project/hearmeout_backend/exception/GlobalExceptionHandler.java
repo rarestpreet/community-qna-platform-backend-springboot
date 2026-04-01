@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -112,6 +111,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidPostOperationException(InvalidOperationException ex) {
+        ExceptionResponseDTO response = ExceptionResponseDTO.builder()
+                .status(409)
+                .error("Invalid post operation")
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 
 
 }
