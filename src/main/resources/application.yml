@@ -12,9 +12,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
+  devtools:
+    restart:
+      enabled: false
 jwt:
   secret: ${SECRET_KEY}
 
+springdoc:
+  swagger-ui:
+    path: /docs
 
 
 

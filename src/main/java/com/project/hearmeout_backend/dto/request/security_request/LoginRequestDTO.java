@@ -1,5 +1,6 @@
 package com.project.hearmeout_backend.dto.request.security_request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -13,6 +14,7 @@ public class LoginRequestDTO {
 
     @NotBlank(message = "Password is required")
     @Length(min = 8, message = "Password must be 8 character long")
+    @Schema(description = "registered user's password")
     private String password;
 
     @Pattern(
@@ -21,5 +23,6 @@ public class LoginRequestDTO {
     )
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
+    @Schema(description = "registered user's email")
     private String email;
 }

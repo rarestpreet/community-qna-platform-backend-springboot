@@ -1,6 +1,6 @@
 package com.project.hearmeout_backend.controller;
 
-import com.project.hearmeout_backend.dto.request.user_request.UserProfileRequestDTO;
+import com.project.hearmeout_backend.dto.request.user_request.UserProfileModificationRequestDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserCommentResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
@@ -10,6 +10,9 @@ import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +26,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/profile/{username}")
 @RequiredArgsConstructor
+@Tag(name = "Profile showcase APIs")
 public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "Get user profile by username")
     @GetMapping("")
     public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username,
                                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        UserProfileResponseDTO profile = userService.getUserProfile(username, userDetails.getUserId());
+        UserProfileResponseDTO profile = userService.getUserProfile(username, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(profile);
     }
 
+    // add pagination and sorting (from recent to older)
+    @Operation(summary = "Get all questions asked by a user")
     @GetMapping("/questions")
     public ResponseEntity<@NonNull List<UserQuestionResponseDTO>> userQuestions(@PathVariable String username)
             throws UserNotFoundException {
@@ -44,6 +51,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userQuestions);
     }
 
+    // add pagination and sorting (from recent to older)
+    @Operation(summary = "Get all answers provided by a user")
     @GetMapping("/answers")
     public ResponseEntity<@NonNull List<UserAnswerResponseDTO>> userAnswers(@PathVariable String username)
             throws UserNotFoundException {
@@ -52,6 +61,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userAnswer);
     }
 
+    // add pagination and sorting (from recent to older)
+    @Operation(summary = "Get all comments made by a user")
     @GetMapping("/comments")
     public ResponseEntity<@NonNull List<UserCommentResponseDTO>> userComments(@PathVariable String username)
             throws UserNotFoundException {
@@ -60,21 +71,25 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
+    @Operation(summary = "Update a user's profile details")
     @PutMapping("")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
-                                                             @Valid @RequestBody UserProfileRequestDTO userProfileRequestDTO,
+                                                             @Valid @RequestBody UserProfileModificationRequestDTO userProfileModificationRequestDTO,
                                                              @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, EmailAlreadyExistException, UsernameAlreadyExistException {
-        userService.updateUserDetails(username, userProfileRequestDTO, userDetails.getUserId());
+        userService.updateUserDetails(username, userProfileModificationRequestDTO, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully");
     }
 
+    @Operation(summary = "Delete a user account")
     @DeleteMapping("")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        userService.terminateUserAccount(username, userDetails.getUserId());
+        userService.terminateUserAccount(username, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Account deleted Successfully");
     }

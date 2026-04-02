@@ -1,11 +1,22 @@
 package com.project.hearmeout_backend.dto.request.tag_request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class TagCreationRequestDTO {
+
+    @NotNull(message = "tag name is required")
+    @Size(max = 15, message = "name should be short (<15 char)")
+    @Schema(description = "name of the tag")
     String name;
+
+    @NotNull(message = "info about tag is required")
+    @Size(max = 50, message = "only brief info about tag (<50 char)")
+    @Schema(description = "info about the tag")
     String description;
 }

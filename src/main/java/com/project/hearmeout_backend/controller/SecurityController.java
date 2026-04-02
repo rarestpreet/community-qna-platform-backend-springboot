@@ -5,6 +5,9 @@ import com.project.hearmeout_backend.dto.request.security_request.RegisterReques
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
 import com.project.hearmeout_backend.service.SecurityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth/")
 @RequiredArgsConstructor
+@Tag(name = "Account authentication APIs")
 public class SecurityController {
 
     private final SecurityService securityService;
 
+    @Operation(summary = "Register a new user account")
     @PostMapping("register")
     public ResponseEntity<@NonNull String> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
             throws UsernameAlreadyExistException, EmailAlreadyExistException {
@@ -33,6 +38,8 @@ public class SecurityController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 
+    @Operation(summary = "Logout the current user and invalidate the session")
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("isAuthenticated()")
     @PostMapping("logout")
     public ResponseEntity<@NonNull String> logoutUser() {
@@ -43,6 +50,7 @@ public class SecurityController {
                 .body("Session ended successfully");
     }
 
+    @Operation(summary = "Authenticate a user and create a session")
     @PostMapping("login")
     public ResponseEntity<@NonNull String> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         ResponseCookie cookie = securityService.authenticateUser(loginRequestDTO);

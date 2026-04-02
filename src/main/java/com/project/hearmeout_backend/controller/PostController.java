@@ -8,6 +8,9 @@ import com.project.hearmeout_backend.exception.TagNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -20,40 +23,46 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/post")
 @RequiredArgsConstructor
+@Tag(name = "Post CRUD APIs")
 public class PostController {
 
     private final PostService postService;
 
     // add controller to handle post status (UNANSWERED, CLOSED, etc.) after user interaction
 
+    @Operation(summary = "Ask a new question")
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/ask")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> askQuestion(@Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, TagNotFoundException {
-        postService.postNewQuestion(questionSubmitRequestDTO, userDetails.getUserId());
+        postService.postNewQuestion(questionSubmitRequestDTO, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Question created successfully");
     }
 
     // make sure parent of answer is not another answer
+    @Operation(summary = "Submit an answer to a question")
     @PostMapping("/{postId}/answer")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> submitAnswer(@PathVariable Long postId,
                                                         @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
                                                         @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, PostNotFoundException {
-        postService.postNewAnswer(postId, answerSubmitRequestDTO, userDetails.getUserId());
+        postService.postNewAnswer(postId, answerSubmitRequestDTO, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer created successfully");
     }
 
+    @Operation(summary = "Get a specific question by ID")
     @GetMapping("/{postId}")
     public ResponseEntity<@NonNull QuestionPostResponseDTO> getQuestion(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws PostNotFoundException {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.getQuestionPost(postId, userDetails != null ? userDetails.getUserId() : null));
+                .body(postService.getQuestionPost(postId, userDetails == null ? null : userDetails.getUserId()));
     }
 
     // add post (question, answer) update and deletion
