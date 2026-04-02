@@ -1,6 +1,6 @@
 package com.project.hearmeout_backend.service;
 
-import com.project.hearmeout_backend.dto.request.user_request.UserProfileRequestDTO;
+import com.project.hearmeout_backend.dto.request.user_request.UserProfileModificationRequestDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserCommentResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
@@ -89,7 +89,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserDetails(String username, UserProfileRequestDTO userProfileRequestDTO, Long userId)
+    public void updateUserDetails(String username, UserProfileModificationRequestDTO userProfileModificationRequestDTO, Long userId)
             throws UserNotFoundException, UsernameAlreadyExistException, EmailAlreadyExistException {
         User currUser = checkAndGetUserByUsername(username);
 
@@ -97,18 +97,18 @@ public class UserService {
             throw new InvalidOperationException("Operation only allowed for account owner");
         }
 
-        if (!currUser.getUsername().equals(userProfileRequestDTO.getUsername()) &&
-                userRepo.existsByUsername(userProfileRequestDTO.getUsername())) {
+        if (!currUser.getUsername().equals(userProfileModificationRequestDTO.getUsername()) &&
+                userRepo.existsByUsername(userProfileModificationRequestDTO.getUsername())) {
             throw new UsernameAlreadyExistException("Username is already taken");
         }
-        if (!currUser.getEmail().equals(userProfileRequestDTO.getEmail()) &&
-                userRepo.existsByEmail(userProfileRequestDTO.getEmail())) {
+        if (!currUser.getEmail().equals(userProfileModificationRequestDTO.getEmail()) &&
+                userRepo.existsByEmail(userProfileModificationRequestDTO.getEmail())) {
             throw new EmailAlreadyExistException("Email is already registered");
         }
 
-        currUser.setUsername(userProfileRequestDTO.getUsername());
-        currUser.setEmail(userProfileRequestDTO.getEmail());
-        currUser.setPassword(passwordEncoder.encode(userProfileRequestDTO.getPassword()));
+        currUser.setUsername(userProfileModificationRequestDTO.getUsername());
+        currUser.setEmail(userProfileModificationRequestDTO.getEmail());
+        currUser.setPassword(passwordEncoder.encode(userProfileModificationRequestDTO.getPassword()));
         currUser.setEmailVerified(false);
 
         userRepo.save(currUser);

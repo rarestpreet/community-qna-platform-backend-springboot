@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class User extends BaseModel {
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 15)
     private String username;
 
     @Column(nullable = false, unique = true)

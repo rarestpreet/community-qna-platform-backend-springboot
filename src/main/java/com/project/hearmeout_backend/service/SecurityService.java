@@ -1,5 +1,6 @@
 package com.project.hearmeout_backend.service;
 
+import com.project.hearmeout_backend.config.CookieProperties;
 import com.project.hearmeout_backend.dto.request.security_request.LoginRequestDTO;
 import com.project.hearmeout_backend.dto.request.security_request.RegisterRequestDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
@@ -9,7 +10,6 @@ import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.model.User;
 import com.project.hearmeout_backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +31,8 @@ public class SecurityService {
     private final AuthenticationManager authManager;
     private final BCryptPasswordEncoder passwordEncoder;
     private final HttpServletRequest httpServletRequest;
-    private final HttpServletResponse httpServletResponse;
     private final JwtService jwtService;
+    private final CookieProperties cookieProperties;
 
     @Transactional
     public void createNewUser(RegisterRequestDTO registerRequestDTO)
@@ -60,9 +60,9 @@ public class SecurityService {
         return ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .maxAge(0)
-                .secure(false)
+                .secure(cookieProperties.isSecure())
                 .path("/")
-                .sameSite("Lax")
+                .sameSite(cookieProperties.getSameSite())
                 .build();
     }
 
@@ -88,8 +88,8 @@ public class SecurityService {
         return ResponseCookie.from("token", jwtToken)
                 .path("/")
                 .httpOnly(true)
-                .secure(false) // true for production
-                .sameSite("Lax") // None for production
+                .secure(cookieProperties.isSecure())
+                .sameSite(cookieProperties.getSameSite())
                 .maxAge(TimeUnit.MINUTES.toSeconds(30))
                 .build();
     }
