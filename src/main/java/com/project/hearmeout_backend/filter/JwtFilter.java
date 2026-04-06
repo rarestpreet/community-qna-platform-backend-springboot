@@ -1,4 +1,4 @@
-package com.project.hearmeout_backend.security.filter;
+package com.project.hearmeout_backend.filter;
 
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.CustomUserDetailsService;
@@ -13,10 +13,12 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @NullMarked
 @RequiredArgsConstructor
@@ -31,6 +33,13 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain)
             throws ServletException, IOException {
+
+        // avoid authentication when not needed
+        if (request.getRequestURI().equals("/api/auth/login") || request.getRequestURI().equals("/api/auth/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = null;
 
         if (request.getCookies() != null) {
@@ -64,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // add log
+            log.warn("Failed to validate JWT token: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

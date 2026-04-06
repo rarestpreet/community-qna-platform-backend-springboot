@@ -1,10 +1,10 @@
 package com.project.hearmeout_backend.service;
 
 import com.project.hearmeout_backend.dto.response.user_response.UserDetailResponseDTO;
-import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetailResponseDTO currUser = userRepo.findUserForAuth(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found. Enter registered email"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found. Enter registered email"));
 
         return new CustomUserDetails(currUser);
     }

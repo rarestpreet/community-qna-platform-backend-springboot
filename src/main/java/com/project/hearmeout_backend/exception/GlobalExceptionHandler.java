@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InternalAuthenticationServiceException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInternalAuthenticationServiceException(InternalAuthenticationServiceException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInternalAuthenticationServiceException(
+            InternalAuthenticationServiceException ex) {
+        log.error("Internal authentication failed: {}", ex.getLocalizedMessage());
         assert ex.getAuthenticationRequest() != null;
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(400)
@@ -29,6 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<@NonNull ExceptionResponseDTO> handleUserNotFoundException(UserNotFoundException ex) {
+        log.warn("User not found: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(404)
                 .error("User not found")
@@ -40,7 +45,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EmailAlreadyExistException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleEmailAlreadyExistException(EmailAlreadyExistException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleEmailAlreadyExistException(
+            EmailAlreadyExistException ex) {
+        log.warn("Email already exist: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(409)
                 .error("Email already exist")
@@ -53,6 +60,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<@NonNull ExceptionResponseDTO> handlePostNotFoundException(PostNotFoundException ex) {
+        log.warn("Post not found: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(404)
                 .error("Post not found")
@@ -65,6 +73,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CommentNotFoundException.class)
     public ResponseEntity<@NonNull ExceptionResponseDTO> handleCommentNotFoundException(CommentNotFoundException ex) {
+        log.warn("Comment not found: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(404)
                 .error("Comment not found")
@@ -76,7 +85,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameAlreadyExistException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleUsernameAlreadyExistException(UsernameAlreadyExistException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleUsernameAlreadyExistException(
+            UsernameAlreadyExistException ex) {
+        log.warn("Username already exist: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(409)
                 .error("Username already exist")
@@ -89,6 +100,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<@NonNull ExceptionResponseDTO> handleValidationException(MethodArgumentNotValidException ex) {
+        log.warn("Validation failed: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(400)
                 .error("Validation failed")
@@ -101,6 +113,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<@NonNull ExceptionResponseDTO> handleTagNotFoundException(TagNotFoundException ex) {
+        log.warn("Tag not found: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(404)
                 .error("Tag not found")
@@ -112,7 +125,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidPostOperationException(InvalidOperationException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidPostOperationException(
+            InvalidOperationException ex) {
+        log.warn("Invalid operation requested: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(409)
                 .error("Invalid post operation")
@@ -122,6 +137,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-
-
 }

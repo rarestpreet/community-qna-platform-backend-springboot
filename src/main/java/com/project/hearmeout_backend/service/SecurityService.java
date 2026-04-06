@@ -19,10 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SecurityService {
@@ -48,6 +50,7 @@ public class SecurityService {
                 passwordEncoder.encode(registerRequestDTO.getPassword()));
 
         userRepo.save(user);
+        log.info("Successfully created new user account for email: {}", registerRequestDTO.getEmail());
     }
 
     public ResponseCookie terminateSession() {
@@ -56,6 +59,7 @@ public class SecurityService {
             session.invalidate();
         }
         SecurityContextHolder.clearContext();
+        log.info("Terminated user session and cleared security context");
 
         return ResponseCookie.from("token", "")
                 .httpOnly(true)
@@ -83,6 +87,7 @@ public class SecurityService {
         CustomUserDetails currUser = (CustomUserDetails) auth.getPrincipal();
 
         String jwtToken = jwtService.generateJwtToken(currUser.getUsername(), currUser.getUserId());
+        log.info("Successfully authenticated user: {}", loginRequestDTO.getEmail());
 
         // change secure value to true for prod
         return ResponseCookie.from("token", jwtToken)
