@@ -21,8 +21,7 @@ public class Post extends BaseModel {
     @Column(length = 100)
     private String title;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String body;
 
     @Enumerated(EnumType.STRING)

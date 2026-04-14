@@ -2,6 +2,7 @@ package com.project.hearmeout_backend.exception;
 
 import com.project.hearmeout_backend.dto.response.ExceptionResponseDTO;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
@@ -72,7 +72,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CommentNotFoundException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleCommentNotFoundException(CommentNotFoundException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleCommentNotFoundException(
+            CommentNotFoundException ex) {
         log.warn("Comment not found: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(404)
@@ -99,7 +100,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleValidationException(
+            MethodArgumentNotValidException ex) {
         log.warn("Validation failed: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(400)
@@ -125,16 +127,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidPostOperationException(
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidOperationException(
             InvalidOperationException ex) {
         log.warn("Invalid operation requested: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
-                .status(409)
-                .error("Invalid post operation")
+                .status(403)
+                .error("Invalid operation")
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 }

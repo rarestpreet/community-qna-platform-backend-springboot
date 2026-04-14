@@ -73,6 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
+            SecurityContextHolder.clearContext();
             log.warn("Failed to validate JWT token: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);

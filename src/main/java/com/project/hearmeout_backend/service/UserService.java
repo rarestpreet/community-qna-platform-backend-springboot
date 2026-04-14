@@ -21,7 +21,6 @@ import com.project.hearmeout_backend.repository.PostRepository;
 import com.project.hearmeout_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +32,6 @@ public class UserService {
     private final UserRepository userRepo;
     private final PostRepository postRepo;
     private final CommentRepository commentRepo;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     public UserProfileResponseDTO getUserProfile(String username, Long userId)
             throws UserNotFoundException {
@@ -89,13 +87,12 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserDetails(String username, UserProfileModificationRequestDTO userProfileModificationRequestDTO, Long userId)
+    public void updateUserDetails(UserProfileModificationRequestDTO userProfileModificationRequestDTO, Long userId)
             throws UserNotFoundException, UsernameAlreadyExistException, EmailAlreadyExistException {
-        User currUser = checkAndGetUserByUsername(username);
-
-        if(!currUser.getId().equals(userId)){
-            throw new InvalidOperationException("Operation only allowed for account owner");
+        if(userId==null){
+            throw new InvalidOperationException("You are not allowed to perform this operation (user update)");
         }
+        User currUser = checkAndGetUserByUserId(userId);
 
         if (!currUser.getUsername().equals(userProfileModificationRequestDTO.getUsername()) &&
                 userRepo.existsByUsername(userProfileModificationRequestDTO.getUsername())) {
@@ -108,25 +105,22 @@ public class UserService {
 
         currUser.setUsername(userProfileModificationRequestDTO.getUsername());
         currUser.setEmail(userProfileModificationRequestDTO.getEmail());
-        currUser.setPassword(passwordEncoder.encode(userProfileModificationRequestDTO.getPassword()));
         currUser.setEmailVerified(false);
 
         userRepo.save(currUser);
     }
 
     @Transactional
-    public void terminateUserAccount(String username, Long userId)
+    public void terminateUserAccount(Long userId)
             throws UserNotFoundException {
-        User currUser = checkAndGetUserByUsername(username);
-
-        if(!currUser.getId().equals(userId)){
-            throw new InvalidOperationException("Operation only allowed for account owner");
+        if(userId==null){
+            throw new InvalidOperationException("You are not allowed to perform this operation (user delete)");
         }
+        User currUser = checkAndGetUserByUserId(userId);
 
+        // update logic for account delete
         currUser.setAccountTerminated(true);
-        currUser.setUsername(currUser.getUsername());
         currUser.setEmail("DELETED"+currUser.getEmail());
-        currUser.setPassword(currUser.getPassword());
         currUser.setEmailVerified(false);
 
         userRepo.save(currUser);

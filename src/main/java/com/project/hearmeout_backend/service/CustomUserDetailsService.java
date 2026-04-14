@@ -4,7 +4,6 @@ import com.project.hearmeout_backend.dto.response.user_response.UserDetailRespon
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
