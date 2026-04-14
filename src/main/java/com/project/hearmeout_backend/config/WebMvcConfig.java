@@ -3,17 +3,29 @@ package com.project.hearmeout_backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
 @Configuration
-public class CorsConfig {
+public class WebMvcConfig {
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = getCorsConfig();
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        /* cors config requires CorsConfigSources (for global cors config) not
+           corsfilter (as it will create two config, one custom and other security config) */
+        return source;
+    }
+
+    private CorsConfiguration getCorsConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+
         corsConfiguration
                 .setAllowedOrigins(List.of("http://localhost:5173", "https://hearmeout-frontend.onrender.com"));
         corsConfiguration
@@ -21,12 +33,10 @@ public class CorsConfig {
         corsConfiguration
                 .setAllowedHeaders(List.of("*"));
         corsConfiguration
+                .setMaxAge(3600L);
+        corsConfiguration
                 .setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        //cors config requires corsfilter and not CorsConfigSources
-        return new CorsFilter(source);
+        return corsConfiguration;
     }
 }
