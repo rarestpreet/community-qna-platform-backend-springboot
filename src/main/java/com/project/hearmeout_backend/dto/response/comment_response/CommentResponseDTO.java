@@ -3,10 +3,7 @@ package com.project.hearmeout_backend.dto.response.comment_response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -25,7 +22,7 @@ public class CommentResponseDTO {
     private Long postId;
 
     @Schema(description = "timestamp of the last update")
-    private LocalDateTime updatedAt;
+    private String updatedAt;
 
     @Schema(description = "indicates if the comment can be edited by the current user")
     private boolean isEditable;

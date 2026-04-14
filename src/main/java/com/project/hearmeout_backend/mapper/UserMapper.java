@@ -5,15 +5,20 @@ import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileR
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
 import com.project.hearmeout_backend.model.User;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
 public class UserMapper {
 
     public static UserProfileResponseDTO toProfileDTO(User user, Long userId) {
         return UserProfileResponseDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .createdAt(user.getCreatedAt())
+                .email(user.getEmail())
+                .createdAt(user.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .reputation(user.getReputation())
-                .isOperable(userId.equals(user.getId()))
+                .isOperable(Objects.equals(user.getId(), userId))
+                .isAccountVerified(user.isAccountVerified())
                 .build();
     }
 

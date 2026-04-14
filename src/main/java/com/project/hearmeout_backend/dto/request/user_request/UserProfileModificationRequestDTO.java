@@ -16,11 +16,6 @@ public class UserProfileModificationRequestDTO {
     @Schema(description = "new unique username for account")
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Length(min = 8, message = "Password must be at least 8 characters")
-    @Schema(description = "new password for account")
-    private String password;
-
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
     @Schema(description = "new unique email for account")

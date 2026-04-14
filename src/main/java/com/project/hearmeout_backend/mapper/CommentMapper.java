@@ -8,12 +8,13 @@ import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.User;
 
 import java.util.Objects;
+import java.time.format.DateTimeFormatter;
 
 public class CommentMapper {
     public static UserCommentResponseDTO toUserCommentResponseDto(Comment comment) {
         return UserCommentResponseDTO.builder()
                 .id(comment.getId())
-                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .body(comment.getBody())
                 .build();
     }
@@ -32,7 +33,7 @@ public class CommentMapper {
                 .body(comment.getBody())
                 .authorId(comment.getAuthor().getId())
                 .postId(comment.getPost().getId())
-                .updatedAt(comment.getUpdatedAt())
+                .updatedAt(comment.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .isEditable(Objects.equals(comment.getAuthor().getId(), currUserId))
                 .build();
     }

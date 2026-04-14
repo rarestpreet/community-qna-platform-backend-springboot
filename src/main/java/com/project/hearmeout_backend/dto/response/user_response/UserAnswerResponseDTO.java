@@ -3,10 +3,7 @@ package com.project.hearmeout_backend.dto.response.user_response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -25,5 +22,8 @@ public class UserAnswerResponseDTO {
     private int score;
 
     @Schema(description = "timestamp of when the answer was created")
-    private LocalDateTime createdAt;
+    private String updatedAt;
+
+    @Schema(description = "title of question associated with answer")
+    private String parentPostTitle;
 }

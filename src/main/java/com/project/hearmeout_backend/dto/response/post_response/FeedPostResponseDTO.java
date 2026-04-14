@@ -4,11 +4,8 @@ import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -28,7 +25,7 @@ public class FeedPostResponseDTO {
     private int score;
 
     @Schema(description = "timestamp of when the post was created")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @Schema(description = "status of the post")
     private String status;

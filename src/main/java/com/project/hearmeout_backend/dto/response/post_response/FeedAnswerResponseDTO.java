@@ -4,10 +4,8 @@ import com.project.hearmeout_backend.dto.response.comment_response.CommentRespon
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -27,7 +25,7 @@ public class FeedAnswerResponseDTO {
     private String body;
 
     @Schema(description = "timestamp of when the answer was created")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @Schema(description = "status of the answer post")
     private String status;

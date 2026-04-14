@@ -17,6 +17,7 @@ import com.project.hearmeout_backend.model.enums.PostType;
 
 import java.util.List;
 import java.util.Objects;
+import java.time.format.DateTimeFormatter;
 
 import static com.project.hearmeout_backend.mapper.CommentMapper.toCommentResponseDTO;
 
@@ -51,7 +52,8 @@ public class PostMapper {
                 .body(answer.getBody())
                 .status(answer.getPostStatus().toString())
                 .score(answer.getScore())
-                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .parentPostTitle(answer.getParent().getTitle())
                 .build();
     }
 
@@ -60,7 +62,7 @@ public class PostMapper {
                 .postId(question.getId())
                 .title(question.getTitle())
                 .score(question.getScore())
-                .createdAt(question.getCreatedAt())
+                .updatedAt(question.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .status(question.getPostStatus().toString())
                 .build();
     }
@@ -75,7 +77,7 @@ public class PostMapper {
                 .authorId(question.getAuthor().getId())
                 .title(question.getTitle())
                 .score(question.getScore())
-                .createdAt(question.getCreatedAt())
+                .createdAt(question.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .status(question.getPostStatus().toString())
                 .tags(tags)
                 .build();
@@ -93,7 +95,7 @@ public class PostMapper {
                 .voted(hasVoted)
                 .score(answer.getScore())
                 .comments(commentList)
-                .createdAt(answer.getCreatedAt())
+                .createdAt(answer.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .status(answer.getPostStatus().toString())
                 .build();
     }
@@ -123,7 +125,7 @@ public class PostMapper {
                 .tags(tags)
                 .score(question.getScore())
                 .postStatus(question.getPostStatus().toString())
-                .createdAt(question.getCreatedAt())
+                .createdAt(question.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .hasVoted(hasVoted)
                 .comments(comments)
                 .build();
