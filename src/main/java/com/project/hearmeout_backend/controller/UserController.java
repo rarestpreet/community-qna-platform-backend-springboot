@@ -9,6 +9,7 @@ import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
+import com.project.hearmeout_backend.service.SecurityService;
 import com.project.hearmeout_backend.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,8 +17,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +34,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final SecurityService securityService;
 
     @Operation(summary = "Get user profile by username")
     @GetMapping("")
@@ -73,24 +78,34 @@ public class UserController {
 
     @Operation(summary = "Update a user's profile details")
     @PutMapping("")
+    @PreAuthorize("isFullyAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
                                                              @Valid @RequestBody UserProfileModificationRequestDTO userProfileModificationRequestDTO,
                                                              @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, EmailAlreadyExistException, UsernameAlreadyExistException {
-        userService.updateUserDetails(username, userProfileModificationRequestDTO, userDetails == null ? null : userDetails.getUserId());
+        userService.updateUserDetails(userProfileModificationRequestDTO, userDetails.getUserId());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Details updated Successfully");
+        ResponseCookie clearedCookie = securityService.terminateSession();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, clearedCookie.toString())
+                .body("Details updated Successfully");
     }
 
     @Operation(summary = "Delete a user account")
     @DeleteMapping("")
+    @PreAuthorize("isFullyAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        userService.terminateUserAccount(username, userDetails == null ? null : userDetails.getUserId());
+        userService.terminateUserAccount(userDetails.getUserId());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Account deleted Successfully");
+        ResponseCookie clearedCookie = securityService.terminateSession();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, clearedCookie.toString())
+                .body("Account deleted Successfully");
     }
 }
