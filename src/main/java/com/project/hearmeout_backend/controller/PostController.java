@@ -31,13 +31,13 @@ public class PostController {
     // add controller to handle post status (UNANSWERED, CLOSED, etc.) after user interaction
 
     @Operation(summary = "Ask a new question")
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/ask")
+    @PreAuthorize("isFullyAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> askQuestion(@Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, TagNotFoundException {
-        postService.postNewQuestion(questionSubmitRequestDTO, userDetails == null ? null : userDetails.getUserId());
+        postService.postNewQuestion(questionSubmitRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Question created successfully");
     }
@@ -45,12 +45,13 @@ public class PostController {
     // make sure parent of answer is not another answer
     @Operation(summary = "Submit an answer to a question")
     @PostMapping("/{postId}/answer")
+    @PreAuthorize("isFullyAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> submitAnswer(@PathVariable Long postId,
                                                         @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
                                                         @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, PostNotFoundException {
-        postService.postNewAnswer(postId, answerSubmitRequestDTO, userDetails == null ? null : userDetails.getUserId());
+        postService.postNewAnswer(postId, answerSubmitRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer created successfully");
     }

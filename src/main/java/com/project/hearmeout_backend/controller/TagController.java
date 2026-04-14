@@ -32,7 +32,7 @@ public class TagController {
 
     // in future make it admin only
     @Operation(summary = "Create a new tag")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("")
     public ResponseEntity<String> createTag(@RequestBody TagCreationRequestDTO tag) {
         tagService.createNewTag(tag);

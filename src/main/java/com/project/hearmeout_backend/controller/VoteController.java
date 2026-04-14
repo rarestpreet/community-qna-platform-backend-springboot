@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +27,11 @@ public class VoteController {
     private final VoteService voteService;
 
     @Operation(summary = "Submit or toggle a vote on a post")
+    @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("/vote")
     public ResponseEntity<@NonNull String> vote(@RequestBody VoteRequestDTO voteRequestDTO,
                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
-        voteService.handleVote(voteRequestDTO, userDetails == null ? null : userDetails.getUserId());
+        voteService.handleVote(voteRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Vote has been updated");
     }

@@ -23,10 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Home display APIs")
 public class HomeController {
-
     private final HomeService homeService;
 
     // add search feature without filters
+
     @Operation(summary = "Get a paginated feed of questions")
     @GetMapping("")
     public ResponseEntity<@NonNull List<FeedPostResponseDTO>> getQuestions(
@@ -41,7 +41,6 @@ public class HomeController {
     public ResponseEntity<@NonNull HomeUserProfileResponseDTO> getProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        System.out.print("home"+userDetails);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(homeService.getUserProfile(userDetails == null ? null : userDetails.getUserId()));
     }
