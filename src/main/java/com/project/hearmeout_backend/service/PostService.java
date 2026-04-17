@@ -3,11 +3,16 @@ package com.project.hearmeout_backend.service;
 import com.project.hearmeout_backend.dto.request.post_request.AnswerSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.request.post_request.QuestionSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO;
+import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.FeedAnswerResponseDTO;
+import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import com.project.hearmeout_backend.exception.InvalidOperationException;
 import com.project.hearmeout_backend.exception.PostNotFoundException;
 import com.project.hearmeout_backend.exception.TagNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
+import com.project.hearmeout_backend.mapper.CommentMapper;
 import com.project.hearmeout_backend.mapper.PostMapper;
+import com.project.hearmeout_backend.mapper.TagMapper;
 import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.Tag;
 import com.project.hearmeout_backend.model.User;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -68,18 +74,34 @@ public class PostService {
         postRepo.save(newPost);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public QuestionPostResponseDTO getQuestionPost(Long postId, Long userId)
             throws PostNotFoundException {
         Post currPost = checkAndGetPost(postId);
 
-        // if user not logged in
-        if (userId == null) {
-            return PostMapper.toQuestionPostResponseDTO(currPost, false, 0L);
-        }
+        Long finalUserId = userId == null ? 0L : userId;
+        boolean hasVoted = userId != null && voteRepo.existsByPostIdAndUserId(postId, userId);
 
-        boolean hasVoted = voteRepo.existsByPostIdAndUserId(postId, userId);
+        List<FeedAnswerResponseDTO> answers = currPost.getAnswers().stream()
+                .map(answer -> {
+                    boolean userVotedOnAnswer = answer.getVotes().stream()
+                            .anyMatch(vote -> Objects.equals(vote.getUser().getId(), finalUserId));
+                    List<CommentResponseDTO> answerComments = answer.getComments().stream()
+                            .map(comment -> CommentMapper.toCommentResponseDTO(
+                                    comment, finalUserId, comment.getAuthor().getId(), comment.getPost().getId()))
+                            .toList();
+                    return PostMapper.toFeedAnswerResponseDTO(answer, userVotedOnAnswer, answerComments);
+                }).toList();
 
-        return PostMapper.toQuestionPostResponseDTO(currPost, hasVoted, userId);
+        List<TagResponseDTO> tags = currPost.getTags().stream()
+                .map(TagMapper::toTagResponseDTO)
+                .toList();
+
+        List<CommentResponseDTO> comments = currPost.getComments().stream()
+                .map(comment -> CommentMapper.toCommentResponseDTO(
+                        comment, finalUserId, comment.getAuthor().getId(), comment.getPost().getId()))
+                .toList();
+
+        return PostMapper.toQuestionPostResponseDTO(currPost, hasVoted, answers, tags, comments);
     }
 }

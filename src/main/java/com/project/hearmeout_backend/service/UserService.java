@@ -19,7 +19,7 @@ import com.project.hearmeout_backend.model.enums.PostType;
 import com.project.hearmeout_backend.repository.CommentRepository;
 import com.project.hearmeout_backend.repository.PostRepository;
 import com.project.hearmeout_backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +38,7 @@ public class UserService {
         return UserMapper.toProfileDTO(checkAndGetUserByUsername(username), userId);
     }
 
+//    @Transactional(readOnly = true)
     public List<UserQuestionResponseDTO> getUserQuestions(String username)
             throws UserNotFoundException {
         User currUser = checkAndGetUserByUsername(username);
@@ -66,13 +67,14 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
+//    @Transactional(readOnly = true)
     public List<UserAnswerResponseDTO> getUserAnswers(String username)
             throws UserNotFoundException {
         User currUser = checkAndGetUserByUsername(username);
         List<Post> answers = postRepo.findByAuthor_IdAndPostType(currUser.getId(), PostType.ANSWER);
 
         return answers.stream()
-                .map(PostMapper::toUserAnswerResponseDTO)
+                .map(answer -> PostMapper.toUserAnswerResponseDTO(answer, answer.getParent().getTitle()))
                 .toList();
     }
 
@@ -105,7 +107,7 @@ public class UserService {
 
         currUser.setUsername(userProfileModificationRequestDTO.getUsername());
         currUser.setEmail(userProfileModificationRequestDTO.getEmail());
-        currUser.setEmailVerified(false);
+        currUser.setAccountVerified(false);
 
         userRepo.save(currUser);
     }
@@ -121,7 +123,7 @@ public class UserService {
         // update logic for account delete
         currUser.setAccountTerminated(true);
         currUser.setEmail("DELETED"+currUser.getEmail());
-        currUser.setEmailVerified(false);
+        currUser.setAccountVerified(false);
 
         userRepo.save(currUser);
     }
