@@ -57,7 +57,7 @@ public class Post extends BaseModel {
     @Builder.Default
     private List<Vote> votes = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "tag_used",
             joinColumns = @JoinColumn(name = "post_id"),

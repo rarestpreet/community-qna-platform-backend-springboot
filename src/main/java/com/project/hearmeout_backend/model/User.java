@@ -1,6 +1,7 @@
 
 package com.project.hearmeout_backend.model;
 
+import com.project.hearmeout_backend.model.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,13 +36,13 @@ public class User extends BaseModel {
     private LocalDateTime passwordOtpExpireAt;
 
     @Builder.Default
-    private boolean isEmailVerified = false;
-
-    @Builder.Default
     private boolean isAccountVerified = false;
 
     @Builder.Default
     private boolean isAccountTerminated = false;
+
+    @Builder.Default
+    private List<RoleType> roles = new ArrayList<>(List.of(RoleType.USER));
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
