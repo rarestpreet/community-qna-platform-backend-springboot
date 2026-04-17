@@ -28,8 +28,6 @@ public class PostController {
 
     private final PostService postService;
 
-    // add controller to handle post status (UNANSWERED, CLOSED, etc.) after user interaction
-
     @Operation(summary = "Ask a new question")
     @PostMapping("/ask")
     @PreAuthorize("isFullyAuthenticated()")
@@ -42,7 +40,6 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Question created successfully");
     }
 
-    // make sure parent of answer is not another answer
     @Operation(summary = "Submit an answer to a question")
     @PostMapping("/{postId}/answer")
     @PreAuthorize("isFullyAuthenticated()")
@@ -65,6 +62,4 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postService.getQuestionPost(postId, userDetails == null ? null : userDetails.getUserId()));
     }
-
-    // add post (question, answer) update and deletion
 }

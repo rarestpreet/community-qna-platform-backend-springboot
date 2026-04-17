@@ -6,7 +6,6 @@ import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
 import com.project.hearmeout_backend.service.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;

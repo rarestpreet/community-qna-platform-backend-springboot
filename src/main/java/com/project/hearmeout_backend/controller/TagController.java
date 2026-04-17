@@ -30,7 +30,6 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.getAllTags());
     }
 
-    // in future make it admin only
     @Operation(summary = "Create a new tag")
     @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("")

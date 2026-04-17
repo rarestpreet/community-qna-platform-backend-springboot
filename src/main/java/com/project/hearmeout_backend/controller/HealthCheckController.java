@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -54,18 +52,16 @@ public class HealthCheckController {
 
     @GetMapping("/cors")
     public ResponseEntity<?> corsHealthCheck(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        List<String> cookieNames = new ArrayList<>();
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                cookieNames.add(cookie.getName());
-
-                log.info("CORS check successful");
+        String cookieValue = "";
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals("corsCheck")) {
+                    log.info("CORS check successful");
+                    cookieValue = cookie.getValue();
+
                     return ResponseEntity.ok(Map.of(
                             "status", "CORS UP",
-                            "cookies", cookieNames,
+                            "cookies", cookieValue,
                             "origin", request.getHeader("Origin"),
                             "timestamp", System.currentTimeMillis()
                     ));
@@ -76,7 +72,7 @@ public class HealthCheckController {
         log.warn("CORS check failed");
         return ResponseEntity.ok(Map.of(
                 "status", "CORS DOWN",
-                "cookies", cookieNames,
+                "cookies", cookieValue,
                 "origin", request.getHeader("Origin"),
                 "timestamp", System.currentTimeMillis()
         ));
