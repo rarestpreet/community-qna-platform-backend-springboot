@@ -39,6 +39,8 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/post/*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/profile/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/tag").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/tag").hasRole("ADMIN")
                                 .requestMatchers(
                                         "/auth/**",
                                         "/test/**",

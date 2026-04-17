@@ -1,7 +1,14 @@
 package com.project.hearmeout_backend.config;
 
+import com.project.hearmeout_backend.dto.request.security_request.RegisterRequestDTO;
+import com.project.hearmeout_backend.mapper.UserMapper;
+import com.project.hearmeout_backend.model.User;
+import com.project.hearmeout_backend.model.enums.RoleType;
+import com.project.hearmeout_backend.repository.UserRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -38,5 +45,23 @@ public class WebMvcConfig {
                 .setAllowCredentials(true);
 
         return corsConfiguration;
+    }
+
+    @Bean
+    public CommandLineRunner createAdmin(UserRepository userRepo, BCryptPasswordEncoder passwordEncoder) {
+        return (args) -> {
+            if(!userRepo.existsByUsername("admin")) {
+                RegisterRequestDTO dto = new RegisterRequestDTO();
+                dto.setUsername("admin");
+                dto.setPassword("admin2026");
+                dto.setEmail("admin@example.com");
+
+                User user = UserMapper.toProfileEntity(dto, passwordEncoder.encode(dto.getPassword()));
+                user.setAccountVerified(true);
+                user.getRoles().add(RoleType.ADMIN);
+
+                userRepo.save(user);
+            }
+        };
     }
 }
