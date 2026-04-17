@@ -4,6 +4,7 @@ import com.project.hearmeout_backend.dto.request.security_request.RegisterReques
 import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.UserProfileResponseDTO;
 import com.project.hearmeout_backend.model.User;
+import com.project.hearmeout_backend.model.enums.RoleType;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -30,11 +31,12 @@ public class UserMapper {
                 .build();
     }
 
-    public static HomeUserProfileResponseDTO toHomeUserProfileResponseDTO(User user) {
+    public static HomeUserProfileResponseDTO toHomeUserProfileResponseDTO(User user, String role) {
         return HomeUserProfileResponseDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
-                .isAccountVerified(user.isAccountVerified())
+                .accountVerified(user.isAccountVerified())
+                .role(role)
                 .build();
     }
 }

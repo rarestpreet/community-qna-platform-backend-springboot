@@ -27,14 +27,14 @@ public class CommentMapper {
                 .build();
     }
 
-    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Long currUserId) {
+    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Long currUserId, Long authorId, Long postId) {
         return CommentResponseDTO.builder()
                 .commentId(comment.getId())
                 .body(comment.getBody())
-                .authorId(comment.getAuthor().getId())
-                .postId(comment.getPost().getId())
+                .authorId(authorId)
+                .postId(postId)
                 .updatedAt(comment.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                .isEditable(Objects.equals(comment.getAuthor().getId(), currUserId))
+                .isEditable(Objects.equals(authorId, currUserId))
                 .build();
     }
 }

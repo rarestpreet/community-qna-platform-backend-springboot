@@ -46,14 +46,14 @@ public class PostMapper {
                 .build();
     }
 
-    public static UserAnswerResponseDTO toUserAnswerResponseDTO(Post answer) {
+    public static UserAnswerResponseDTO toUserAnswerResponseDTO(Post answer, String parentPostTitle) {
         return UserAnswerResponseDTO.builder()
                 .postId(answer.getId())
                 .body(answer.getBody())
                 .status(answer.getPostStatus().toString())
                 .score(answer.getScore())
                 .updatedAt(answer.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-                .parentPostTitle(answer.getParent().getTitle())
+                .parentPostTitle(parentPostTitle)
                 .build();
     }
 
@@ -67,11 +67,7 @@ public class PostMapper {
                 .build();
     }
 
-    public static FeedPostResponseDTO toFeedPostResponseDTO(Post question) {
-        List<TagResponseDTO> tags = question.getTags().stream()
-                .map(TagMapper::toTagResponseDTO)
-                .toList();
-
+    public static FeedPostResponseDTO toFeedPostResponseDTO(Post question, List<TagResponseDTO> tags) {
         return FeedPostResponseDTO.builder()
                 .postId(question.getId())
                 .authorId(question.getAuthor().getId())
@@ -83,39 +79,20 @@ public class PostMapper {
                 .build();
     }
 
-    public static FeedAnswerResponseDTO toFeedAnswerResponseDTO(Post answer, boolean hasVoted, Long currUserId) {
-        List<CommentResponseDTO> commentList = answer.getComments().stream()
-                .map(comment -> CommentMapper.toCommentResponseDTO(comment, currUserId))
-                .toList();
-
+    public static FeedAnswerResponseDTO toFeedAnswerResponseDTO(Post answer, boolean hasVoted, List<CommentResponseDTO> comments) {
         return FeedAnswerResponseDTO.builder()
                 .body(answer.getBody())
                 .postId(answer.getId())
                 .authorId(answer.getAuthor().getId())
                 .voted(hasVoted)
                 .score(answer.getScore())
-                .comments(commentList)
+                .comments(comments)
                 .createdAt(answer.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .status(answer.getPostStatus().toString())
                 .build();
     }
 
-    public static QuestionPostResponseDTO toQuestionPostResponseDTO(Post question, boolean hasVoted, Long currUserId) {
-        List<FeedAnswerResponseDTO> answers = question.getAnswers().stream()
-                .map(answer -> {
-                    boolean userVotedOnAnswer = answer.getVotes().stream()
-                            .anyMatch(vote -> Objects.equals(vote.getUser().getId(), currUserId));
-                    return PostMapper.toFeedAnswerResponseDTO(answer, userVotedOnAnswer, currUserId);
-                }).toList();
-
-        List<TagResponseDTO> tags = question.getTags().stream()
-                .map(TagMapper::toTagResponseDTO)
-                .toList();
-
-        List<CommentResponseDTO> comments = question.getComments().stream()
-                .map(comment -> toCommentResponseDTO(comment, currUserId))
-                .toList();
-
+    public static QuestionPostResponseDTO toQuestionPostResponseDTO(Post question, boolean hasVoted, List<FeedAnswerResponseDTO> answers, List<TagResponseDTO> tags, List<CommentResponseDTO> comments) {
         return QuestionPostResponseDTO.builder()
                 .postId(question.getId())
                 .title(question.getTitle())
