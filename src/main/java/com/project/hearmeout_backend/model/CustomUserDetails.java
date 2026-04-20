@@ -2,13 +2,15 @@ package com.project.hearmeout_backend.model;
 
 import com.project.hearmeout_backend.dto.response.user_response.UserDetailResponseDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
+@Slf4j
 @NullMarked
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -17,7 +19,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(user.getAuthority());
+        log.info("getAuthorities {}", user.getRoles().toString());
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .toList();
     }
 
     @Override

@@ -1,18 +1,17 @@
 package com.project.hearmeout_backend.dto.response.user_response;
 
+import com.project.hearmeout_backend.model.enums.RoleType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.List;
+
 @Getter
+@AllArgsConstructor
 public class UserDetailResponseDTO {
     private final Long userId;
     private final String username;
     private final String password;
-    private final SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
-
-    public UserDetailResponseDTO(Long id, String email, String password) {
-        this.userId = id;
-        this.username = email;
-        this.password = password;
-    }
+    private List<RoleType> roles;
 }

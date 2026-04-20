@@ -1,20 +1,17 @@
 package com.project.hearmeout_backend.service;
 
-import com.project.hearmeout_backend.dto.response.post_response.FeedPostResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.FeedQuestionResponseDTO;
+import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileResponseDTO;
-import com.project.hearmeout_backend.mapper.PostMapper;
-import com.project.hearmeout_backend.mapper.UserMapper;
-import com.project.hearmeout_backend.model.Post;
+import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.enums.PostType;
-import com.project.hearmeout_backend.model.enums.RoleType;
 import com.project.hearmeout_backend.repository.PostRepository;
+import com.project.hearmeout_backend.repository.TagRepository;
+import com.project.hearmeout_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
-import com.project.hearmeout_backend.mapper.TagMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -25,35 +22,36 @@ import java.util.List;
 public class HomeService {
 
     private final PostRepository postRepo;
-    private final UserService userService;
+    private final TagRepository tagRepo;
+    private final UserRepository userRepo;
 
     @Transactional(readOnly = true)
-    public List<FeedPostResponseDTO> generateFeed(int page, Long userId) {
+    public List<FeedQuestionResponseDTO> generateFeed(int page, Long userId) {
         Pageable pageable = PageRequest.of(page, 10);
-        List<Post> questions = new ArrayList<>();
+        List<FeedQuestionResponseDTO> feedPosts;
 
         if (userId != null)
-            questions = postRepo.findByPostTypeAndAuthorIdNot(PostType.QUESTION, pageable, userId);
+            feedPosts = postRepo.findFeedPostsDTOByPostTypeAndAuthorIdNot(PostType.QUESTION, userId, pageable);
         else
-            questions = postRepo.findByPostType(PostType.QUESTION, pageable);
+            feedPosts = postRepo.findFeedPostsDTOByPostType(PostType.QUESTION, pageable);
 
-        return questions.stream()
-                .map(question -> {
-                    List<TagResponseDTO> tags = question.getTags().stream()
-                            .map(TagMapper::toTagResponseDTO)
-                            .toList();
-                    return PostMapper.toFeedPostResponseDTO(question, tags);
-                })
-                .toList();
+        feedPosts.forEach(post -> {
+            List<TagResponseDTO> tags = tagRepo.findTagsDTOByPostId(post.getNavigationPostId());
+            post.setTags(tags);
+        });
+
+        return feedPosts;
     }
 
     @Transactional(readOnly = true)
     public HomeUserProfileResponseDTO getUserProfile(Long userId) {
         if (userId == null) {
-            return new HomeUserProfileResponseDTO(null, null, false, "");
+            return new HomeUserProfileResponseDTO(null, null, false, new ArrayList<>());
         }
-        var user = userService.checkAndGetUserByUserId(userId);
-        String role = user.getRoles().contains(RoleType.ADMIN) ? "ADMIN" : "USER";
-        return UserMapper.toHomeUserProfileResponseDTO(user, role);
+
+        return userRepo.getHomeUserProfileById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id:  " + userId + " was not found")
+                );
     }
 }

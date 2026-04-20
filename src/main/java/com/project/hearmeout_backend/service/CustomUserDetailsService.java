@@ -21,6 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserDetailResponseDTO currUser = userRepo.findUserForAuth(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found. Enter registered email"));
 
+
         return new CustomUserDetails(currUser);
     }
 }

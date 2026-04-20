@@ -1,18 +1,82 @@
 package com.project.hearmeout_backend.repository;
 
+import com.project.hearmeout_backend.dto.response.post_response.FeedQuestionResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.PostAnswerResponseDTO;
+import com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO;
+import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO;
 import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.enums.PostType;
-import org.jspecify.annotations.NullMarked;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.jspecify.annotations.NullMarked;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @NullMarked
+@Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findByAuthor_IdAndPostType(Long userId, PostType postType);
+    @Query("""
+                SELECT new com.project.hearmeout_backend.dto.response.user_response.UserAnswerResponseDTO(
+                a.body, a.status, a.score, a.updatedAt, q.id, q.title
+                )
+                FROM Post a
+                JOIN a.parent q
+                WHERE a.author.id = :userId
+                AND a.postType = :postType
+            """)
+    List<UserAnswerResponseDTO> findUserAnswerByUsername(@Param("username") String username, @Param("postType") PostType postType);
 
-    List<Post> findByPostTypeAndAuthorIdNot(PostType postType, Pageable pageable, Long userId);
-    List<Post> findByPostType(PostType postType, Pageable pageable);
+    @Query("""
+                SELECT new com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO(
+                q.id, q.title, q.score, q.updatedAt, q.status
+                )
+                FROM Post q
+                WHERE q.author.id = :userId
+                AND q.postType = :postType
+            """)
+    List<UserQuestionResponseDTO> findUserQuestionByUsername(@Param("username") String username, @Param("postType") PostType postType);
+
+    @Query("""
+        SELECT new com.project.hearmeout_backend.dto.response.post_response.FeedQuestionResponseDTO(
+            p.id, p.author.username, p.title, p.score, p.updatedAt, p.status
+        )
+        FROM Post p
+        WHERE p.postType = :postType
+        AND p.author.id != :userId
+    """)
+    List<FeedQuestionResponseDTO> findFeedPostsDTOByPostTypeAndAuthorIdNot(@Param("postType") PostType postType, @Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+        SELECT new com.project.hearmeout_backend.dto.response.post_response.FeedQuestionResponseDTO(
+            p.id, p.author.username, p.title, p.score, p.updatedAt, p.status
+        )
+        FROM Post p
+        WHERE p.postType = :postType
+    """)
+    List<FeedQuestionResponseDTO> findFeedPostsDTOByPostType(@Param("postType") PostType postType, Pageable pageable);
+
+    @Query("""
+        SELECT new com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO(
+            p.id, p.author.username, p.title, p.body, p.score, p.updatedAt, p.status
+        )
+        FROM Post p
+        WHERE p.id = :postId
+    """)
+    Optional<QuestionPostResponseDTO> findQuestionPostDetailsDTO(@Param("postId") Long postId);
+
+    @Query("""
+        SELECT new com.project.hearmeout_backend.dto.response.post_response.PostAnswerResponseDTO(
+            a.id, a.author.username, a.body, a.score, a.updatedAt, a.status
+        )
+        FROM Post a
+        WHERE a.parent.id = :parentId AND a.postType = :postType
+    """)
+    List<PostAnswerResponseDTO> findAnswersDTOByQuestionId(@Param("parentId") Long parentId, @Param("postType") PostType postType);
 }

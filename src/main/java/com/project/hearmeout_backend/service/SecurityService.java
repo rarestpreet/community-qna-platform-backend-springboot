@@ -4,7 +4,7 @@ import com.project.hearmeout_backend.config.CookieProperties;
 import com.project.hearmeout_backend.dto.request.security_request.LoginRequestDTO;
 import com.project.hearmeout_backend.dto.request.security_request.RegisterRequestDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
-import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
+import com.project.hearmeout_backend.exception.UserAlreadyExistException;
 import com.project.hearmeout_backend.mapper.UserMapper;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.model.User;
@@ -38,12 +38,9 @@ public class SecurityService {
 
     @Transactional
     public void createNewUser(RegisterRequestDTO registerRequestDTO)
-            throws UsernameAlreadyExistException, EmailAlreadyExistException {
-        if (userRepo.existsByUsername(registerRequestDTO.getUsername())) {
-            throw new UsernameAlreadyExistException("Username is already taken");
-        }
-        if (userRepo.existsByEmail(registerRequestDTO.getEmail())) {
-            throw new EmailAlreadyExistException("Email is already registered");
+            throws UserAlreadyExistException, EmailAlreadyExistException {
+        if (userRepo.existsByUsernameOrEmail(registerRequestDTO.getUsername(), registerRequestDTO.getEmail())) {
+            throw new UserAlreadyExistException("User with similar username or email already exist");
         }
 
         User user = UserMapper.toProfileEntity(registerRequestDTO,

@@ -47,7 +47,7 @@ public class Post extends BaseModel {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostStatus postStatus;
+    private PostStatus status;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
