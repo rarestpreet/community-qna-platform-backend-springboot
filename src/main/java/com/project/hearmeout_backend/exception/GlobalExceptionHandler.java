@@ -85,9 +85,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(UsernameAlreadyExistException.class)
-    public ResponseEntity<@NonNull ExceptionResponseDTO> handleUsernameAlreadyExistException(
-            UsernameAlreadyExistException ex) {
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleUserAlreadyExistException(
+            UserAlreadyExistException ex) {
         log.warn("Username already exist: {}", ex.getMessage());
         ExceptionResponseDTO response = ExceptionResponseDTO.builder()
                 .status(409)

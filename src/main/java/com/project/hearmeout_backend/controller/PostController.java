@@ -8,14 +8,15 @@ import com.project.hearmeout_backend.exception.TagNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.PostService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +60,10 @@ public class PostController {
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws PostNotFoundException {
+        Long userId = userDetails == null ? 0L : userDetails.getUserId();
+        String username = userDetails == null ? "" : userDetails.getUsername();
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.getQuestionPost(postId, userDetails == null ? null : userDetails.getUserId()));
+                .body(postService.getQuestionPost(postId, userId, username));
     }
 }

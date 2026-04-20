@@ -7,7 +7,7 @@ import com.project.hearmeout_backend.dto.response.user_response.UserProfileRespo
 import com.project.hearmeout_backend.dto.response.user_response.UserQuestionResponseDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
-import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
+import com.project.hearmeout_backend.exception.UserAlreadyExistException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.SecurityService;
 import com.project.hearmeout_backend.service.UserService;
@@ -83,7 +83,7 @@ public class UserController {
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
                                                              @Valid @RequestBody UserProfileModificationRequestDTO userProfileModificationRequestDTO,
                                                              @AuthenticationPrincipal CustomUserDetails userDetails)
-            throws UserNotFoundException, EmailAlreadyExistException, UsernameAlreadyExistException {
+            throws UserNotFoundException, EmailAlreadyExistException, UserAlreadyExistException {
         userService.updateUserDetails(userProfileModificationRequestDTO, userDetails.getUserId());
 
         ResponseCookie clearedCookie = securityService.terminateSession();

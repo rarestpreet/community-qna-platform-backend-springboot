@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/health")
 @Slf4j
 @RequiredArgsConstructor
+@PreAuthorize("isFullyAuthenticated()")
 public class HealthCheckController {
 
     private final CookieProperties cookieProperties;
@@ -56,7 +58,10 @@ public class HealthCheckController {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals("corsCheck")) {
-                    log.info("CORS check successful");
+
+                    if(cookie.getValue().isEmpty()){
+                       break;
+                    }
                     cookieValue = cookie.getValue();
 
                     return ResponseEntity.ok(Map.of(
@@ -69,10 +74,9 @@ public class HealthCheckController {
             }
         }
 
-        log.warn("CORS check failed");
         return ResponseEntity.ok(Map.of(
                 "status", "CORS DOWN",
-                "cookies", cookieValue,
+                "cookies", "",
                 "origin", request.getHeader("Origin"),
                 "timestamp", System.currentTimeMillis()
         ));

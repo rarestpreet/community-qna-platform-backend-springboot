@@ -3,13 +3,18 @@ package com.project.hearmeout_backend.dto.request.user_request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class UserProfileModificationRequestDTO {
+
+    @NotBlank
+    private Long userId;
 
     @NotBlank(message = "Username is required")
     @Length(max = 50, message = "Username must be less than 50 characters")

@@ -26,8 +26,8 @@ public class TagController {
 
     @Operation(summary = "Get a list of all existing tags")
     @GetMapping("")
-    public ResponseEntity<List<TagResponseDTO>> tagList() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.getAllTags());
+    public ResponseEntity<List<TagResponseDTO>> tagList(@RequestParam(defaultValue = "0") int pageNum) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.getAllTags(pageNum));
     }
 
     @Operation(summary = "Create a new tag")
@@ -35,6 +35,7 @@ public class TagController {
     @PostMapping("")
     public ResponseEntity<String> createTag(@RequestBody TagCreationRequestDTO tag) {
         tagService.createNewTag(tag);
+
         return ResponseEntity.status(HttpStatus.OK).body("tag created successfully");
     }
 }

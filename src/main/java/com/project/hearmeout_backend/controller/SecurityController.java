@@ -3,7 +3,7 @@ package com.project.hearmeout_backend.controller;
 import com.project.hearmeout_backend.dto.request.security_request.LoginRequestDTO;
 import com.project.hearmeout_backend.dto.request.security_request.RegisterRequestDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
-import com.project.hearmeout_backend.exception.UsernameAlreadyExistException;
+import com.project.hearmeout_backend.exception.UserAlreadyExistException;
 import com.project.hearmeout_backend.service.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ public class SecurityController {
     @Operation(summary = "Register a new user account")
     @PostMapping("register")
     public ResponseEntity<@NonNull String> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
-            throws UsernameAlreadyExistException, EmailAlreadyExistException {
+            throws UserAlreadyExistException, EmailAlreadyExistException {
         securityService.createNewUser(registerRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
