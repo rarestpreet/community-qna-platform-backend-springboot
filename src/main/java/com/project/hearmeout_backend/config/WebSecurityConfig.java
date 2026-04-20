@@ -40,15 +40,14 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/profile/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tag").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/tag").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/tag").hasAuthority("ADMIN")
+                                .requestMatchers("/health/**").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/auth/**",
-                                        "/test/**",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
-                                        "/docs/**",
-                                        "/health/**"
+                                        "/docs/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
