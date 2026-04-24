@@ -50,6 +50,14 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
+
+    @Transactional(readOnly = true)
+    public User checkAndGetUserByUsername(String username)
+            throws UserNotFoundException {
+        return userRepo.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+    }
+
     @Transactional(readOnly = true)
     public List<UserAnswerResponseDTO> getUserAnswers(String username)
             throws UserNotFoundException {

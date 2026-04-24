@@ -10,6 +10,7 @@ import com.project.hearmeout_backend.model.Comment;
 import com.project.hearmeout_backend.model.Post;
 import com.project.hearmeout_backend.model.User;
 import com.project.hearmeout_backend.repository.CommentRepository;
+import com.project.hearmeout_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CommentService {
     private final UserService userService;
     private final PostService postService;
     private final CommentRepository commentRepo;
+    private final UserRepository userRepo;
 
     @Transactional
     public void createNewComment(CommentRequestDTO commentRequestDTO, Long userId)
@@ -29,13 +31,16 @@ public class CommentService {
         Post post = postService.checkAndGetPost(commentRequestDTO.getPostId());
 
         Comment newComment = CommentMapper.toCommentEntity(commentRequestDTO, post, author);
-
         commentRepo.save(newComment);
+
+        author.setReputation(author.getReputation() + 2);
+        userRepo.save(author);
     }
 
     @Transactional
     public void removeComment(Long commentId, Long userId)
             throws CommentNotFoundException {
+        User author = userService.checkAndGetUserByUserId(userId);
         Comment comment = checkAndGetComment(commentId);
 
         if(!comment.getAuthor().getId().equals(userId)) {
@@ -43,6 +48,9 @@ public class CommentService {
         }
 
         commentRepo.delete(comment);
+
+        author.setReputation(author.getReputation() - 2);
+        userRepo.save(author);
     }
 
     public Comment checkAndGetComment(Long commentId)
