@@ -16,11 +16,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("""
             SELECT new com.project.hearmeout_backend.dto.response.user_response.UserCommentResponseDTO(
-                    c.body, COALESCE(p.id, p.parent.id), p.body, c.updatedAt
+                    c.body, COALESCE(p.parent.id, p.id), p.body, c.updatedAt
                     )
             FROM Comment c
             JOIN c.post p
-            WHERE c.author.id = :userId
+            WHERE c.author.username = :username
             """)
     List<UserCommentResponseDTO> findUserCommentsByUsername(@Param("username") String username);
 

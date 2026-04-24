@@ -28,7 +28,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 )
                 FROM Post a
                 JOIN a.parent q
-                WHERE a.author.id = :userId
+                WHERE a.author.username = :username
                 AND a.postType = :postType
             """)
     List<UserAnswerResponseDTO> findUserAnswerByUsername(@Param("username") String username, @Param("postType") PostType postType);
@@ -38,7 +38,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 q.id, q.title, q.score, q.updatedAt, q.status
                 )
                 FROM Post q
-                WHERE q.author.id = :userId
+                WHERE q.author.username = :username
                 AND q.postType = :postType
             """)
     List<UserQuestionResponseDTO> findUserQuestionByUsername(@Param("username") String username, @Param("postType") PostType postType);
@@ -68,8 +68,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         )
         FROM Post p
         WHERE p.id = :postId
+        AND p.postType = :postType
     """)
-    Optional<QuestionPostResponseDTO> findQuestionPostDetailsDTO(@Param("postId") Long postId);
+    Optional<QuestionPostResponseDTO> findQuestionPostDetailsDTO(@Param("postId") Long postId, @Param("postType") PostType postType);
 
     @Query("""
         SELECT new com.project.hearmeout_backend.dto.response.post_response.PostAnswerResponseDTO(

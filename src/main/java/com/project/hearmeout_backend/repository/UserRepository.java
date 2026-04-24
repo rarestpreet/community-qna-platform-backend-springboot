@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
                 SELECT new com.project.hearmeout_backend.dto.response.user_response.UserDetailResponseDTO(
-                    u.id, u.email, u.password, u.roles
+                    u.id, u.username, u.email, u.password, u.roles
                 )
                 FROM User u
                 WHERE u.email = :email
@@ -47,4 +47,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<HomeUserProfileResponseDTO> getHomeUserProfileById(@Param("id") Long id);
 
     boolean existsByUsernameOrEmail(String username, String email);
+
+    Optional<User> findByUsername(String username);
 }
