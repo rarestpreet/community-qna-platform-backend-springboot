@@ -1,5 +1,6 @@
 package com.project.hearmeout_backend.controller;
 
+import com.project.hearmeout_backend.dto.request.post_request.AcceptAnswerRequestDTO;
 import com.project.hearmeout_backend.dto.request.post_request.AnswerSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.request.post_request.QuestionSubmitRequestDTO;
 import com.project.hearmeout_backend.dto.response.post_response.QuestionPostResponseDTO;
@@ -61,9 +62,20 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws PostNotFoundException {
         Long userId = userDetails == null ? 0L : userDetails.getUserId();
-        String username = userDetails == null ? "" : userDetails.getUsername();
+        String username = userDetails == null ? "" : userDetails.getUserName();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(postService.getQuestionPost(postId, userId, username));
+    }
+
+    @Operation
+    @PostMapping("/toggleStatus")
+    @PreAuthorize("isFullyAuthenticated()")
+    public ResponseEntity<@NonNull String> acceptAnswer(
+            @Valid @RequestBody AcceptAnswerRequestDTO acceptAnswerRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails){
+        postService.acceptAnswer(acceptAnswerRequestDTO, userDetails.getUserId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Answer accepted successfully");
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
 import com.project.hearmeout_backend.dto.response.tag_response.TagResponseDTO;
 import com.project.hearmeout_backend.model.enums.PostStatus;
+import com.project.hearmeout_backend.model.enums.VoteType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +38,10 @@ public class QuestionPostResponseDTO {
     private List<TagResponseDTO> tags;
 
     @Schema(description = "indicates if the current user has voted on this post")
-    private boolean hasVoted;
+    private boolean voted;
+
+    @Schema(description = "indicates the vote type casted by user on post")
+    private VoteType voteType;
 
     @Schema(description = "list of comments on the post")
     private List<CommentResponseDTO> comments;

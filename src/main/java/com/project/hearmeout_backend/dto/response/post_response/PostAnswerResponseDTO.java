@@ -3,6 +3,7 @@ package com.project.hearmeout_backend.dto.response.post_response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.hearmeout_backend.dto.response.comment_response.CommentResponseDTO;
 import com.project.hearmeout_backend.model.enums.PostStatus;
+import com.project.hearmeout_backend.model.enums.VoteType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,9 @@ public class PostAnswerResponseDTO {
 
     @Schema(description = "indicates if the current user has voted on this answer")
     private boolean voted;
+
+    @Schema(description = "indicates the vote type casted by an user on post")
+    private VoteType voteType;
 
     @Schema(description = "unique identifier of the answer's author")
     private String authorUsername;
