@@ -8,16 +8,15 @@ import com.project.hearmeout_backend.exception.PostNotFoundException;
 import com.project.hearmeout_backend.exception.TagNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.PostService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.project.hearmeout_backend.service.implementation.PostServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Post CRUD APIs")
 public class PostController {
 
-    private final PostService postService;
+    private final PostServiceImpl postServiceImpl;
 
     @Operation(summary = "Ask a new question")
     @PostMapping("/ask")
@@ -37,7 +36,7 @@ public class PostController {
     public ResponseEntity<@NonNull String> askQuestion(@Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, TagNotFoundException {
-        postService.postNewQuestion(questionSubmitRequestDTO, userDetails.getUserId());
+        postServiceImpl.postNewQuestion(questionSubmitRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Question created successfully");
     }
@@ -46,11 +45,12 @@ public class PostController {
     @PostMapping("/{postId}/answer")
     @PreAuthorize("isFullyAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<@NonNull String> submitAnswer(@PathVariable Long postId,
-                                                        @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
-                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
+    public ResponseEntity<@NonNull String> submitAnswer(
+            @PathVariable Long postId,
+            @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, PostNotFoundException {
-        postService.postNewAnswer(postId, answerSubmitRequestDTO, userDetails.getUserId());
+        postServiceImpl.postNewAnswer(postId, answerSubmitRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer created successfully");
     }
@@ -65,7 +65,7 @@ public class PostController {
         String username = userDetails == null ? "" : userDetails.getUserName();
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(postService.getQuestionPost(postId, userId, username));
+                .body(postServiceImpl.getQuestionPost(postId, userId, username));
     }
 
     @Operation
@@ -73,9 +73,55 @@ public class PostController {
     @PreAuthorize("isFullyAuthenticated()")
     public ResponseEntity<@NonNull String> acceptAnswer(
             @Valid @RequestBody AcceptAnswerRequestDTO acceptAnswerRequestDTO,
-            @AuthenticationPrincipal CustomUserDetails userDetails){
-        postService.acceptAnswer(acceptAnswerRequestDTO, userDetails.getUserId());
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postServiceImpl.acceptAnswer(acceptAnswerRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer accepted successfully");
+    }
+
+    @Operation
+    @PutMapping("/answer/{answerId}")
+    @PreAuthorize("isFullyAuthenticated()")
+    public ResponseEntity<@NonNull String> modifyAnswer(
+            @PathVariable Long answerId,
+            @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postServiceImpl.updateAnswer(answerId, answerSubmitRequestDTO, userDetails.getUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Answer modified successfully");
+    }
+
+    @Operation
+    @DeleteMapping("/answer/{answerId}")
+    @PreAuthorize("isFullyAuthenticated()")
+    public ResponseEntity<@NonNull String> removeAnswer(
+            @PathVariable Long answerId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postServiceImpl.deleteAnswer(answerId, userDetails.getUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Answer deleted successfully");
+    }
+
+    @Operation
+    @PutMapping("/question/{questionId}")
+    @PreAuthorize("isFullyAuthenticated()")
+    public ResponseEntity<@NonNull String> modifyQuestion(
+            @PathVariable Long questionId,
+            @Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postServiceImpl.updateQuestion(questionId, questionSubmitRequestDTO, userDetails.getUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Question modified successfully");
+    }
+
+    @Operation
+    @DeleteMapping("/question/{questionId}")
+    @PreAuthorize("isFullyAuthenticated()")
+    public ResponseEntity<@NonNull String> removeQuestion(
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postServiceImpl.deleteQuestion(questionId, userDetails.getUserId());
+
+        return ResponseEntity.status(HttpStatus.OK).body("Question deleted successfully");
     }
 }

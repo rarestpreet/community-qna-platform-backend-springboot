@@ -3,7 +3,7 @@ package com.project.hearmeout_backend.controller;
 import com.project.hearmeout_backend.dto.response.post_response.FeedQuestionResponseDTO;
 import com.project.hearmeout_backend.dto.response.user_response.HomeUserProfileResponseDTO;
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.HomeService;
+import com.project.hearmeout_backend.service.implementation.HomeServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.NonNull;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Home display APIs")
 public class HomeController {
-    private final HomeService homeService;
+    private final HomeServiceImpl homeServiceImpl;
 
     // add search feature without filters
 
@@ -33,7 +33,7 @@ public class HomeController {
             @RequestParam(defaultValue = "0") int pageNum,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(homeService.generateFeed(pageNum, userDetails == null ? null : userDetails.getUserId()));
+                .body(homeServiceImpl.generateFeed(pageNum, userDetails == null ? null : userDetails.getUserId()));
     }
 
     @Operation(summary = "Get the current authenticated user's profile info for the home page")
@@ -42,6 +42,6 @@ public class HomeController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(homeService.getUserProfile(userDetails == null ? null : userDetails.getUserId()));
+                .body(homeServiceImpl.getUserProfile(userDetails == null ? null : userDetails.getUserId()));
     }
 }

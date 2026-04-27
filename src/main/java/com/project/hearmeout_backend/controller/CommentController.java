@@ -5,7 +5,7 @@ import com.project.hearmeout_backend.exception.CommentNotFoundException;
 import com.project.hearmeout_backend.exception.PostNotFoundException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.CommentService;
+import com.project.hearmeout_backend.service.implementation.CommentServiceImpl;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "bearerAuth")
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentServiceImpl commentServiceImpl;
 
     @Operation(summary = "Post a new comment on a post")
     @PostMapping("")
@@ -34,7 +34,7 @@ public class CommentController {
             @Valid @RequestBody CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws UserNotFoundException, PostNotFoundException {
-        commentService.createNewComment(commentRequestDTO, userDetails.getUserId());
+        commentServiceImpl.createNewComment(commentRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Comment was added successfully");
     }
@@ -46,7 +46,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws CommentNotFoundException {
-        commentService.removeComment(commentId, userDetails.getUserId());
+        commentServiceImpl.removeComment(commentId, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Comment was deleted successfully");
     }
@@ -56,10 +56,10 @@ public class CommentController {
     @PreAuthorize("isFullyAuthenticated()")
     public ResponseEntity<@NonNull String> updateComment(
             @PathVariable Long commentId,
-            @RequestBody String body,
+            @RequestBody CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) throws CommentNotFoundException {
-        commentService.updateCommentBody(commentId, body, userDetails.getUserId());
+        commentServiceImpl.updateCommentBody(commentId, commentRequestDTO.getBody(), userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Comment was updated successfully");
     }

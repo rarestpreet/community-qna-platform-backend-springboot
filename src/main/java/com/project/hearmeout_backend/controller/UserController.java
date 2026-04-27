@@ -9,8 +9,8 @@ import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserNotFoundException;
 import com.project.hearmeout_backend.exception.UserAlreadyExistException;
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.SecurityService;
-import com.project.hearmeout_backend.service.UserService;
+import com.project.hearmeout_backend.service.implementation.SecurityServiceImpl;
+import com.project.hearmeout_backend.service.implementation.UserServiceImpl;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,15 +33,15 @@ import java.util.List;
 @Tag(name = "Profile showcase APIs")
 public class UserController {
 
-    private final UserService userService;
-    private final SecurityService securityService;
+    private final UserServiceImpl userServiceImpl;
+    private final SecurityServiceImpl securityServiceImpl;
 
     @Operation(summary = "Get user profile by username")
     @GetMapping("")
     public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username,
                                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        UserProfileResponseDTO profile = userService.getUserProfile(username, userDetails == null ? null : userDetails.getUserId());
+        UserProfileResponseDTO profile = userServiceImpl.getUserProfile(username, userDetails == null ? null : userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body(profile);
     }
@@ -51,7 +51,7 @@ public class UserController {
     @GetMapping("/questions")
     public ResponseEntity<@NonNull List<UserQuestionResponseDTO>> userQuestions(@PathVariable String username)
             throws UserNotFoundException {
-        List<UserQuestionResponseDTO> userQuestions = userService.getUserQuestions(username);
+        List<UserQuestionResponseDTO> userQuestions = userServiceImpl.getUserQuestions(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(userQuestions);
     }
@@ -61,7 +61,7 @@ public class UserController {
     @GetMapping("/answers")
     public ResponseEntity<@NonNull List<UserAnswerResponseDTO>> userAnswers(@PathVariable String username)
             throws UserNotFoundException {
-        List<UserAnswerResponseDTO> userAnswer = userService.getUserAnswers(username);
+        List<UserAnswerResponseDTO> userAnswer = userServiceImpl.getUserAnswers(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(userAnswer);
     }
@@ -71,7 +71,7 @@ public class UserController {
     @GetMapping("/comments")
     public ResponseEntity<@NonNull List<UserCommentResponseDTO>> userComments(@PathVariable String username)
             throws UserNotFoundException {
-        List<UserCommentResponseDTO> comments = userService.getUserComments(username);
+        List<UserCommentResponseDTO> comments = userServiceImpl.getUserComments(username);
 
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
@@ -84,9 +84,9 @@ public class UserController {
                                                              @Valid @RequestBody UserProfileModificationRequestDTO userProfileModificationRequestDTO,
                                                              @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, EmailAlreadyExistException, UserAlreadyExistException {
-        userService.updateUserDetails(userProfileModificationRequestDTO, userDetails.getUserId());
+        userServiceImpl.updateUserDetails(userProfileModificationRequestDTO, userDetails.getUserId());
 
-        ResponseCookie clearedCookie = securityService.terminateSession();
+        ResponseCookie clearedCookie = securityServiceImpl.terminateSession();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, clearedCookie.toString())
@@ -100,9 +100,9 @@ public class UserController {
     public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException {
-        userService.terminateUserAccount(userDetails.getUserId());
+        userServiceImpl.terminateUserAccount(userDetails.getUserId());
 
-        ResponseCookie clearedCookie = securityService.terminateSession();
+        ResponseCookie clearedCookie = securityServiceImpl.terminateSession();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, clearedCookie.toString())

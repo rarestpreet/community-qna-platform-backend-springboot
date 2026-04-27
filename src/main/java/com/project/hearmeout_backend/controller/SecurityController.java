@@ -4,7 +4,7 @@ import com.project.hearmeout_backend.dto.request.security_request.LoginRequestDT
 import com.project.hearmeout_backend.dto.request.security_request.RegisterRequestDTO;
 import com.project.hearmeout_backend.exception.EmailAlreadyExistException;
 import com.project.hearmeout_backend.exception.UserAlreadyExistException;
-import com.project.hearmeout_backend.service.SecurityService;
+import com.project.hearmeout_backend.service.implementation.SecurityServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Account authentication APIs")
 public class SecurityController {
 
-    private final SecurityService securityService;
+    private final SecurityServiceImpl securityServiceImpl;
 
     @Operation(summary = "Register a new user account")
     @PostMapping("register")
     public ResponseEntity<@NonNull String> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
             throws UserAlreadyExistException, EmailAlreadyExistException {
-        securityService.createNewUser(registerRequestDTO);
+        securityServiceImpl.createNewUser(registerRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
@@ -39,7 +39,7 @@ public class SecurityController {
     @Operation(summary = "Logout the current user and invalidate the session")
     @PostMapping("logout")
     public ResponseEntity<@NonNull String> logoutUser() {
-        ResponseCookie cookie = securityService.terminateSession();
+        ResponseCookie cookie = securityServiceImpl.terminateSession();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -49,7 +49,7 @@ public class SecurityController {
     @Operation(summary = "Authenticate a user and create a session")
     @PostMapping("login")
     public ResponseEntity<@NonNull String> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        ResponseCookie cookie = securityService.authenticateUser(loginRequestDTO);
+        ResponseCookie cookie = securityServiceImpl.authenticateUser(loginRequestDTO);
 
         return ResponseEntity.status(HttpStatus.OK)
                  .header(HttpHeaders.SET_COOKIE, cookie.toString())

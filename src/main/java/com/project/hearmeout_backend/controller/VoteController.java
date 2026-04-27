@@ -2,7 +2,7 @@ package com.project.hearmeout_backend.controller;
 
 import com.project.hearmeout_backend.dto.request.vote_request.VoteRequestDTO;
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.VoteService;
+import com.project.hearmeout_backend.service.implementation.VoteServiceImpl;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,14 +24,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @SecurityRequirement(name = "bearerAuth")
 public class VoteController {
 
-    private final VoteService voteService;
+    private final VoteServiceImpl voteServiceImpl;
 
     @Operation(summary = "Submit or toggle a vote on a post")
     @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("/vote")
     public ResponseEntity<@NonNull String> vote(@RequestBody VoteRequestDTO voteRequestDTO,
                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
-        voteService.handleVote(voteRequestDTO, userDetails.getUserId());
+        voteServiceImpl.handleVote(voteRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Vote has been updated");
     }
