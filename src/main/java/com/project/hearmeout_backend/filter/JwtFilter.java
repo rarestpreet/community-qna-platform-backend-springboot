@@ -1,8 +1,8 @@
 package com.project.hearmeout_backend.filter;
 
 import com.project.hearmeout_backend.model.CustomUserDetails;
-import com.project.hearmeout_backend.service.CustomUserDetailsService;
-import com.project.hearmeout_backend.service.JwtService;
+import com.project.hearmeout_backend.service.implementation.CustomUserDetailsServiceImpl;
+import com.project.hearmeout_backend.service.implementation.JwtServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -24,8 +24,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtServiceImpl jwtService;
+    private final CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
     @Override
     protected void doFilterInternal(
@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (username != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null) {
-                CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                CustomUserDetails userDetails = customUserDetailsServiceImpl.loadUserByUsername(username);
 
                 boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
 
