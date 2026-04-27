@@ -1,4 +1,4 @@
 package com.project.hearmeout_backend.service;
 
-public class TagService {
+public class CustomerUserDetails {
 }

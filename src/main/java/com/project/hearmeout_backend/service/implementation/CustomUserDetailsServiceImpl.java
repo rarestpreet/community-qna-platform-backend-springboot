@@ -1,4 +1,4 @@
-package com.project.hearmeout_backend.service;
+package com.project.hearmeout_backend.service.implementation;
 
 import com.project.hearmeout_backend.dto.response.user_response.UserDetailResponseDTO;
 import com.project.hearmeout_backend.model.CustomUserDetails;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @NullMarked
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepo;
 
