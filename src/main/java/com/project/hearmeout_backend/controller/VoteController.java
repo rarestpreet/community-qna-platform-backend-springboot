@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Vote toggle APIs")
 @SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
 public class VoteController {
 
     private final VoteServiceImpl voteServiceImpl;
 
     @Operation(summary = "Submit or toggle a vote on a post")
-    @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("/vote")
     public ResponseEntity<@NonNull String> toggleVote(@RequestBody VoteRequestDTO voteRequestDTO,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails) {

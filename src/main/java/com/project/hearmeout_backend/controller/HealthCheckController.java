@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/health")
 @Slf4j
 @RequiredArgsConstructor
-@PreAuthorize("isFullyAuthenticated()")
+@PreAuthorize("isFullyAuthenticated() && hasAuthority('ADMIN')")
 public class HealthCheckController {
 
     private final CookieProperties cookieProperties;

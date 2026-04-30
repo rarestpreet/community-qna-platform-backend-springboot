@@ -78,7 +78,7 @@ public class UserController {
 
     @Operation(summary = "Update a user's profile details")
     @PutMapping("")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> updateUserProfile(@PathVariable String username,
                                                              @Valid @RequestBody UserProfileModificationRequestDTO userProfileModificationRequestDTO,
@@ -95,7 +95,7 @@ public class UserController {
 
     @Operation(summary = "Delete a user account")
     @DeleteMapping("")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> deleteUser(@PathVariable String username,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails)

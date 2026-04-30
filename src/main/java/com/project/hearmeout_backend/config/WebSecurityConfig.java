@@ -40,8 +40,6 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/profile/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tag").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/tag").hasAuthority("ADMIN")
-                                .requestMatchers("/health/**").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/auth/**",
                                         "/v3/api-docs/**",

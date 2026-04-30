@@ -12,24 +12,26 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 @Tag(name = "Comment CRUD APIs")
 @SecurityRequirement(name = "bearerAuth")
+@PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
 public class CommentController {
 
     private final CommentServiceImpl commentServiceImpl;
 
     @Operation(summary = "Post a new comment on a post")
     @PostMapping("")
-    @PreAuthorize("isFullyAuthenticated()")
     public ResponseEntity<@NonNull String> postComment(
             @Valid @RequestBody CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -41,7 +43,6 @@ public class CommentController {
 
     @Operation(summary = "Delete an existing comment")
     @DeleteMapping("/{commentId}")
-    @PreAuthorize("isFullyAuthenticated()")
     public ResponseEntity<@NonNull String> deleteComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -53,7 +54,6 @@ public class CommentController {
 
     @Operation(summary = "Update an existing comment body")
     @PutMapping("/{commentId}")
-    @PreAuthorize("isFullyAuthenticated()")
     public ResponseEntity<@NonNull String> updateComment(
             @PathVariable Long commentId,
             @RequestBody CommentRequestDTO commentRequestDTO,

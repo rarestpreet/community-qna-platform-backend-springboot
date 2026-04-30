@@ -31,7 +31,7 @@ public class PostController {
 
     @Operation(summary = "Ask a new question")
     @PostMapping("/ask")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> askQuestion(@Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
@@ -43,7 +43,7 @@ public class PostController {
 
     @Operation(summary = "Submit an answer to a question")
     @PostMapping("/{postId}/answer")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<@NonNull String> submitAnswer(
             @PathVariable Long postId,
@@ -70,7 +70,7 @@ public class PostController {
 
     @Operation
     @PostMapping("/toggleStatus")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> toggleAnswerStatus(
             @Valid @RequestBody AcceptAnswerRequestDTO acceptAnswerRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -81,7 +81,7 @@ public class PostController {
 
     @Operation
     @PutMapping("/answer/{answerId}")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> modifyAnswer(
             @PathVariable Long answerId,
             @Valid @RequestBody AnswerSubmitRequestDTO answerSubmitRequestDTO,
@@ -93,7 +93,7 @@ public class PostController {
 
     @Operation
     @DeleteMapping("/answer/{answerId}")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> removeAnswer(
             @PathVariable Long answerId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -104,7 +104,7 @@ public class PostController {
 
     @Operation
     @PutMapping("/question/{questionId}")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> modifyQuestion(
             @PathVariable Long questionId,
             @Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
@@ -116,7 +116,7 @@ public class PostController {
 
     @Operation
     @DeleteMapping("/question/{questionId}")
-    @PreAuthorize("isFullyAuthenticated()")
+    @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> removeQuestion(
             @PathVariable Long questionId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
