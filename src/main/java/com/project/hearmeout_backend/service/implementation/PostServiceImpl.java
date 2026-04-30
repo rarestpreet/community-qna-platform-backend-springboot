@@ -133,26 +133,35 @@ public class PostServiceImpl {
     }
 
     @Transactional
-    public void acceptAnswer(AcceptAnswerRequestDTO acceptAnswerRequestDTO, Long currUserId) {
+    public void handleAnswerStatus(AcceptAnswerRequestDTO acceptAnswerRequestDTO, Long currUserId) {
         Post question = checkAndGetPost(acceptAnswerRequestDTO.getQuestionId());
         Post answer = checkAndGetPost(acceptAnswerRequestDTO.getAnswerId());
         User answerAuthor = userServiceImpl.checkAndGetUserByUserId(answer.getAuthor().getId());
         User questionAuthor = userServiceImpl.checkAndGetUserByUserId(question.getAuthor().getId());
 
-        if (!Objects.equals(questionAuthor.getId(), currUserId)) {
-            throw new InvalidOperationException("You can only accept solution for self-posted questions.");
+        if (!Objects.equals(PostType.ANSWER, answer.getPostType()) ||
+                !Objects.equals(PostType.QUESTION, question.getPostType())) {
+            throw new InvalidOperationException("Operation cannot be performed for the requested post.");
         }
 
-        if (answer.getParent() == null || !Objects.equals(answer.getParent().getId(), question.getId())) {
+        if (!Objects.equals(questionAuthor.getId(), currUserId)) {
+            throw new InvalidOperationException("You can only perform operations for self-posted questions.");
+        }
+
+        if (!Objects.equals(answer.getParent().getId(), question.getId())) {
             throw new InvalidOperationException("This answer does not belong to the specified question.");
         }
 
-        if (Objects.equals(answer.getStatus(), PostStatus.ACCEPTED)) {
-            questionAuthor.setReputation(questionAuthor.getReputation() - 3);
-            answerAuthor.setReputation(answerAuthor.getReputation() - 7);
-            question.setStatus(PostStatus.ANSWERED);
-            answer.setStatus(PostStatus.UNREVIEWED);
-            answer.setScore(answer.getScore() - 5);
+        PostStatus currQuestionStatus = question.getStatus();
+        PostStatus currAnswerStatus = answer.getStatus();
+
+        // question is not resolved, author intend to close the question and accept an answer
+        if (Objects.equals(currQuestionStatus, PostStatus.ANSWERED)) {
+            questionAuthor.setReputation(questionAuthor.getReputation() + 3);
+            answerAuthor.setReputation(answerAuthor.getReputation() + 7);
+            answer.setScore(answer.getScore() + 5);
+            question.setStatus(PostStatus.CLOSED);
+            answer.setStatus(PostStatus.ACCEPTED);
 
             postRepo.save(question);
             postRepo.save(answer);
@@ -162,15 +171,37 @@ public class PostServiceImpl {
             return;
         }
 
-        if (Objects.equals(question.getStatus(), PostStatus.CLOSED)) {
-            throw new InvalidOperationException("Question already resolved.");
+        // question is already resolved, but author intend to reopen the question for new answers
+        if (Objects.equals(currAnswerStatus, PostStatus.ACCEPTED)) {
+            questionAuthor.setReputation(questionAuthor.getReputation() - 3);
+            answerAuthor.setReputation(answerAuthor.getReputation() - 7);
+            answer.setScore(answer.getScore() - 5);
+            question.setStatus(PostStatus.ANSWERED);
+            answer.setStatus(PostStatus.UNREVIEWED);
         }
+        // question is already resolved, but author intend to accept another answer and keep the question closed
+        else {
+            List<Post> acceptedAnswers = question.getAnswers().stream()
+                    .filter(ans -> Objects.equals(ans.getStatus(), PostStatus.ACCEPTED))
+                    .toList();
 
-        questionAuthor.setReputation(questionAuthor.getReputation() + 3);
-        answerAuthor.setReputation(answerAuthor.getReputation() + 7);
-        question.setStatus(PostStatus.CLOSED);
-        answer.setStatus(PostStatus.ACCEPTED);
-        answer.setScore(answer.getScore() + 5);
+            if(acceptedAnswers.size() != 1) {
+               log.error("Invalid accepted answers for a closed question {}", question.getId());
+            }
+            Post olderAcceptedAnswer = acceptedAnswers.getFirst();
+            User olderAcceptedAnswerAuthor = userServiceImpl.checkAndGetUserByUserId(olderAcceptedAnswer.getAuthor().getId());
+
+            olderAcceptedAnswer.setStatus(PostStatus.UNREVIEWED);
+            olderAcceptedAnswer.setScore(olderAcceptedAnswer.getScore() - 5);
+            olderAcceptedAnswerAuthor.setReputation(olderAcceptedAnswerAuthor.getReputation() - 7);
+
+            postRepo.save(olderAcceptedAnswer);
+            userRepo.save(olderAcceptedAnswerAuthor);
+
+            answerAuthor.setReputation(answerAuthor.getReputation() + 7);
+            answer.setScore(answer.getScore() + 5);
+            answer.setStatus(PostStatus.ACCEPTED);
+        }
 
         postRepo.save(question);
         postRepo.save(answer);

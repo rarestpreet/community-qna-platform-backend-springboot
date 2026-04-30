@@ -71,10 +71,10 @@ public class PostController {
     @Operation
     @PostMapping("/toggleStatus")
     @PreAuthorize("isFullyAuthenticated()")
-    public ResponseEntity<@NonNull String> acceptAnswer(
+    public ResponseEntity<@NonNull String> toggleAnswerStatus(
             @Valid @RequestBody AcceptAnswerRequestDTO acceptAnswerRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postServiceImpl.acceptAnswer(acceptAnswerRequestDTO, userDetails.getUserId());
+        postServiceImpl.handleAnswerStatus(acceptAnswerRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer accepted successfully");
     }

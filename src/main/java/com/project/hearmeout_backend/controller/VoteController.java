@@ -3,9 +3,9 @@ package com.project.hearmeout_backend.controller;
 import com.project.hearmeout_backend.dto.request.vote_request.VoteRequestDTO;
 import com.project.hearmeout_backend.model.CustomUserDetails;
 import com.project.hearmeout_backend.service.implementation.VoteServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,8 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("")
@@ -29,8 +29,8 @@ public class VoteController {
     @Operation(summary = "Submit or toggle a vote on a post")
     @PreAuthorize("isFullyAuthenticated()")
     @PostMapping("/vote")
-    public ResponseEntity<@NonNull String> vote(@RequestBody VoteRequestDTO voteRequestDTO,
-                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<@NonNull String> toggleVote(@RequestBody VoteRequestDTO voteRequestDTO,
+                                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         voteServiceImpl.handleVote(voteRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.OK).body("Vote has been updated");
