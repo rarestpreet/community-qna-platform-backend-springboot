@@ -50,12 +50,18 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
-
     @Transactional(readOnly = true)
     public User checkAndGetUserByUsername(String username)
             throws UserNotFoundException {
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+    }
+
+    @Transactional(readOnly = true)
+    public User checkAndGetUserByEmail(String email)
+            throws UserNotFoundException {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
     @Transactional(readOnly = true)
@@ -95,16 +101,17 @@ public class UserServiceImpl {
     @Transactional
     public void terminateUserAccount(Long userId)
             throws UserNotFoundException {
-        if (userId == null) {
-            throw new InvalidOperationException("You are not allowed to perform this operation (user delete)");
-        }
         User currUser = checkAndGetUserByUserId(userId);
 
-        // update logic for account delete
+
+        /*
+        update logic for account delete
+
         currUser.setAccountTerminated(true);
         currUser.setEmail("DELETED" + currUser.getEmail());
         currUser.setAccountVerified(false);
+        */
 
-        userRepo.save(currUser);
+        userRepo.delete(currUser);
     }
 }

@@ -139,4 +139,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+    @ExceptionHandler(InvalidOtpException.class)
+    public ResponseEntity<@NonNull ExceptionResponseDTO> handleInvalidOtpException(
+            InvalidOperationException ex) {
+        log.warn("Invalid otp received: {}", ex.getMessage());
+        ExceptionResponseDTO response = ExceptionResponseDTO.builder()
+                .status(400)
+                .error("Invalid otp")
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
