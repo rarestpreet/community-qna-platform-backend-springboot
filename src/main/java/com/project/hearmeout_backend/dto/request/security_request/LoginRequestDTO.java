@@ -16,7 +16,7 @@ public class LoginRequestDTO {
 
     @NotBlank(message = "Password is required")
     @Length(min = 8, message = "Password must be 8 character long")
-    @Schema(description = "registered user's password")
+    @Schema(description = "The registered user's account password")
     private String password;
 
     @Pattern(
@@ -25,6 +25,6 @@ public class LoginRequestDTO {
     )
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be a valid email address")
-    @Schema(description = "registered user's email")
+    @Schema(description = "The registered user's email address")
     private String email;
 }

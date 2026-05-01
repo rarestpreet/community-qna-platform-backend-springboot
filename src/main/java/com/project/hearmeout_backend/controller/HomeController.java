@@ -21,13 +21,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
-@Tag(name = "Home display APIs")
+@Tag(name = "Home Feed APIs", description = "Endpoints for fetching the main question feed and user summary for the home page")
 public class HomeController {
     private final HomeServiceImpl homeServiceImpl;
 
     // add search feature without filters
 
-    @Operation(summary = "Get a paginated feed of questions")
+    @Operation(summary = "Get question feed", description = "Retrieves a paginated list of recent questions. Incorporates user-specific data like voting status if the user is authenticated.")
     @GetMapping("")
     public ResponseEntity<@NonNull List<FeedQuestionResponseDTO>> getQuestions(
             @RequestParam(defaultValue = "0") int pageNum,
@@ -36,7 +36,7 @@ public class HomeController {
                 .body(homeServiceImpl.generateFeed(pageNum, userDetails == null ? null : userDetails.getUserId()));
     }
 
-    @Operation(summary = "Get the current authenticated user's profile info for the home page")
+    @Operation(summary = "Get user summary", description = "Fetches a simplified profile summary for the currently authenticated user to display on the home page.")
     @GetMapping("profile")
     public ResponseEntity<@NonNull HomeUserProfileResponseDTO> getProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails

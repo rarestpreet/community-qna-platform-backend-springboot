@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("")
 @RequiredArgsConstructor
-@Tag(name = "Vote toggle APIs")
+@Tag(name = "Vote Management", description = "Endpoints for casting, modifying, and removing votes on posts")
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
 public class VoteController {
 
     private final VoteServiceImpl voteServiceImpl;
 
-    @Operation(summary = "Submit or toggle a vote on a post")
+    @Operation(summary = "Submit or toggle a vote", description = "Allows a user to upvote or downvote a post (question or answer). Submitting the same vote again will remove it. Submitting a different vote will change it.")
     @PostMapping("/vote")
     public ResponseEntity<@NonNull String> toggleVote(@RequestBody VoteRequestDTO voteRequestDTO,
                                                       @AuthenticationPrincipal CustomUserDetails userDetails) {

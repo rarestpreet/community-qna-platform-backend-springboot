@@ -14,15 +14,15 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class HomeUserProfileResponseDTO {
-    @Schema(description = "username of the user")
+    @Schema(description = "The public username of the authenticated user")
     private String username;
 
-    @Schema(description = "unique identifier of the user")
+    @Schema(description = "The unique identifier of the user, used for navigating to their full profile")
     private Long userNavigationId;
 
-    @Schema(description = "indicates if the user's account is verified")
+    @Schema(description = "Indicates whether the user has verified their email account")
     private boolean accountVerified;
 
-    @Schema(description = "Role assigned to the user", example = "USER")
+    @Schema(description = "List of roles assigned to the user", example = "[\"USER\"]")
     private List<RoleType> roles;
 }

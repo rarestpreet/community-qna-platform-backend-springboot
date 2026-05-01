@@ -17,23 +17,23 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class FeedQuestionResponseDTO {
-    @Schema(description = "unique identifier of the post")
+    @Schema(description = "The unique identifier of the question post, used for navigation")
     private Long navigationPostId;
 
-    @Schema(description = "unique identifier of the post's author")
+    @Schema(description = "The username of the question's author")
     private String authorUsername;
 
-    @Schema(description = "title of the post")
+    @Schema(description = "The title of the question")
     private String title;
 
-    @Schema(description = "total vote score of the post")
+    @Schema(description = "The net vote score of the question (upvotes minus downvotes)")
     private int score;
 
     @Schema(description = "timestamp of when the post was created")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "status of the post")
+    @Schema(description = "The current status of the question (e.g., OPEN, ANSWERED)")
     private PostStatus postStatus;
 
     @Schema(description = "list of tags associated with the post")

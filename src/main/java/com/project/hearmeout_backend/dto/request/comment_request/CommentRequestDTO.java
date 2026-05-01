@@ -15,10 +15,10 @@ public class CommentRequestDTO {
 
     @NotBlank(message = "Comment body is required")
     @Size(min = 10, max = 100, message = "Comment must be between 10 and 100 characters")
-    @Schema(description = "comment context/body")
+    @Schema(description = "The text content of the comment")
     private String body;
 
     @NotNull(message = "Post id is required")
-    @Schema(description = "post associated with comment")
+    @Schema(description = "The ID of the post (question or answer) this comment is attached to")
     private Long postId;
 }

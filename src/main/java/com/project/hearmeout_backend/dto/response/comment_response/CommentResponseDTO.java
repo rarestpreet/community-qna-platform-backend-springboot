@@ -14,23 +14,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CommentResponseDTO {
-    @Schema(description = "unique identifier of the comment")
+    @Schema(description = "The unique identifier of the comment")
     private Long commentId;
 
-    @Schema(description = "content of the comment")
+    @Schema(description = "The text content of the comment")
     private String body;
 
-    @Schema(description = "unique identifier of the comment's author")
+    @Schema(description = "The username of the comment's author")
     private String authorUsername;
 
-    @Schema(description = "unique identifier of the associated post")
+    @Schema(description = "The ID of the parent post (question or answer) for navigation purposes")
     private Long navigationPostId;
 
     @Schema(description = "timestamp of the last update")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "indicates if the comment can be edited by the current user")
+    @Schema(description = "Indicates whether the current authenticated user has permission to edit or delete this comment")
     private boolean operable;
 
     public CommentResponseDTO(Long commentId, String body, String authorUsername, Long navigationPostId, LocalDateTime updatedAt) {

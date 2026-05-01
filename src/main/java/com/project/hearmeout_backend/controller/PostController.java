@@ -24,24 +24,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/post")
 @RequiredArgsConstructor
-@Tag(name = "Post CRUD APIs")
+@Tag(name = "Post Management", description = "Endpoints for creating, reading, updating, and deleting questions and answers")
 public class PostController {
 
     private final PostServiceImpl postServiceImpl;
 
-    @Operation(summary = "Ask a new question")
+    @Operation(summary = "Ask a new question", description = "Creates a new question post with title, body, and tags. Requires user authentication.")
     @PostMapping("/ask")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<@NonNull String> askQuestion(@Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
-                                                       @AuthenticationPrincipal CustomUserDetails userDetails)
+    public ResponseEntity<@NonNull String> askQuestion(
+            @Valid @RequestBody QuestionSubmitRequestDTO questionSubmitRequestDTO,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
             throws UserNotFoundException, TagNotFoundException {
         postServiceImpl.postNewQuestion(questionSubmitRequestDTO, userDetails.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Question created successfully");
     }
 
-    @Operation(summary = "Submit an answer to a question")
+    @Operation(summary = "Submit an answer", description = "Adds a new answer to a specific question. Requires user authentication.")
     @PostMapping("/{postId}/answer")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -55,12 +56,11 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer created successfully");
     }
 
-    @Operation(summary = "Get a specific question by ID")
+    @Operation(summary = "Get question details", description = "Retrieves a specific question by its ID, including its answers, comments, and tags. User context is applied if authenticated.")
     @GetMapping("/{postId}")
     public ResponseEntity<@NonNull QuestionPostResponseDTO> getQuestion(
             @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) throws PostNotFoundException {
+            @AuthenticationPrincipal CustomUserDetails userDetails) throws PostNotFoundException {
         Long userId = userDetails == null ? 0L : userDetails.getUserId();
         String username = userDetails == null ? "" : userDetails.getUserName();
 
@@ -68,7 +68,7 @@ public class PostController {
                 .body(postServiceImpl.getQuestionPost(postId, userId, username));
     }
 
-    @Operation
+    @Operation(summary = "Accept an answer", description = "Toggles the accepted status of an answer. Only the question author can accept an answer.")
     @PostMapping("/toggleStatus")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> toggleAnswerStatus(
@@ -79,7 +79,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Answer accepted successfully");
     }
 
-    @Operation
+    @Operation(summary = "Update an answer", description = "Modifies the content of an existing answer. Only the answer author can update it.")
     @PutMapping("/answer/{answerId}")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> modifyAnswer(
@@ -91,7 +91,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("Answer modified successfully");
     }
 
-    @Operation
+    @Operation(summary = "Delete an answer", description = "Removes an existing answer by its ID. Only the answer author can delete it.")
     @DeleteMapping("/answer/{answerId}")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> removeAnswer(
@@ -102,7 +102,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("Answer deleted successfully");
     }
 
-    @Operation
+    @Operation(summary = "Update a question", description = "Modifies an existing question's title, body, and tags. Only the question author can update it.")
     @PutMapping("/question/{questionId}")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> modifyQuestion(
@@ -114,7 +114,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("Question modified successfully");
     }
 
-    @Operation
+    @Operation(summary = "Delete a question", description = "Removes an existing question by its ID. Only the question author can delete it.")
     @DeleteMapping("/question/{questionId}")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     public ResponseEntity<@NonNull String> removeQuestion(

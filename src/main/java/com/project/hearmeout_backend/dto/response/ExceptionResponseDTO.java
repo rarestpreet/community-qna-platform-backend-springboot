@@ -10,18 +10,18 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 public class ExceptionResponseDTO {
-    @Schema(description = "HTTP status code")
+    @Schema(description = "The HTTP status code of the error response")
     private int status;
 
-    @Schema(description = "timestamp of the exception")
+    @Schema(description = "The exact timestamp when the exception occurred")
     private LocalDateTime timestamp;
 
-    @Schema(description = "error type or reason")
+    @Schema(description = "A brief description of the error type or reason")
     private String error;
 
-    @Schema(description = "detailed error message")
+    @Schema(description = "A detailed message explaining the error")
     private String message;
 
-    @Schema(description = "map of field names to validation error messages")
+    @Schema(description = "A map containing field-specific validation errors, if applicable")
     private Map<String, String> fieldErrors;
 }

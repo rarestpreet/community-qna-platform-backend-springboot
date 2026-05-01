@@ -13,20 +13,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserQuestionResponseDTO {
-    @Schema(description = "unique identifier of the question post to navigate to")
+    @Schema(description = "The unique identifier of the question post, used for navigation")
     private Long navigationPostId;
 
-    @Schema(description = "title of the question")
+    @Schema(description = "The title of the question")
     private String title;
 
-    @Schema(description = "total vote score of the question")
+    @Schema(description = "The net vote score of the question")
     private int score;
 
     @Schema(description = "timestamp of when the question was modified (or created)")
     @JsonFormat(pattern = "dd-MM-yyy")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "status of the question")
+    @Schema(description = "The current status of the question (e.g., OPEN, CLOSED)")
     private PostStatus postStatus;
 }
 

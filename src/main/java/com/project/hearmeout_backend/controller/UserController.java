@@ -30,13 +30,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/profile/{username}")
 @RequiredArgsConstructor
-@Tag(name = "Profile showcase APIs")
+@Tag(name = "User Profile Management", description = "Endpoints for viewing and managing user profiles and their activity")
 public class UserController {
 
     private final UserServiceImpl userServiceImpl;
     private final SecurityServiceImpl securityServiceImpl;
 
-    @Operation(summary = "Get user profile by username")
+    @Operation(summary = "Get user profile", description = "Retrieves the public profile information of a user by their username.")
     @GetMapping("")
     public ResponseEntity<@NonNull UserProfileResponseDTO> userProfile(@PathVariable String username,
                                                                        @AuthenticationPrincipal CustomUserDetails userDetails)
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // add pagination and sorting (from recent to older)
-    @Operation(summary = "Get all questions asked by a user")
+    @Operation(summary = "Get user questions", description = "Retrieves a list of all questions asked by the specified user.")
     @GetMapping("/questions")
     public ResponseEntity<@NonNull List<UserQuestionResponseDTO>> userQuestions(@PathVariable String username)
             throws UserNotFoundException {
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     // add pagination and sorting (from recent to older)
-    @Operation(summary = "Get all answers provided by a user")
+    @Operation(summary = "Get user answers", description = "Retrieves a list of all answers provided by the specified user.")
     @GetMapping("/answers")
     public ResponseEntity<@NonNull List<UserAnswerResponseDTO>> userAnswers(@PathVariable String username)
             throws UserNotFoundException {
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     // add pagination and sorting (from recent to older)
-    @Operation(summary = "Get all comments made by a user")
+    @Operation(summary = "Get user comments", description = "Retrieves a list of all comments made by the specified user.")
     @GetMapping("/comments")
     public ResponseEntity<@NonNull List<UserCommentResponseDTO>> userComments(@PathVariable String username)
             throws UserNotFoundException {
@@ -76,7 +76,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
-    @Operation(summary = "Update a user's profile details")
+    @Operation(summary = "Update user profile", description = "Modifies the authenticated user's profile details such as username and email. Terminates the current session upon success.")
     @PutMapping("")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -93,7 +93,7 @@ public class UserController {
                 .body("Details updated Successfully");
     }
 
-    @Operation(summary = "Delete a user account")
+    @Operation(summary = "Delete user account", description = "Permanently deletes the authenticated user's account and terminates their current session.")
     @DeleteMapping("")
     @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")

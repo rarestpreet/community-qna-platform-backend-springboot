@@ -13,10 +13,10 @@ import lombok.Setter;
 public class VoteRequestDTO {
 
     @NotNull(message = "postId cannot be null")
-    @Schema(description = "post associated with the vote")
+    @Schema(description = "The ID of the post (question or answer) being voted on")
     private Long postId;
 
     @NotNull(message = "define the type of vote")
-    @Schema(description = "define the vote type (upvote/downvote)")
+    @Schema(description = "The type of vote being cast (UPVOTE or DOWNVOTE)")
     private VoteType voteType;
 }

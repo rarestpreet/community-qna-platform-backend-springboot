@@ -19,18 +19,18 @@ import java.util.List;
 @RequestMapping("/tag")
 @RequiredArgsConstructor
 @NullMarked
-@Tag(name = "Tag CRUD APIS")
+@Tag(name = "Tag Management", description = "Endpoints for fetching and creating tags used for categorizing posts")
 @SecurityRequirement(name = "bearerAuth")
 public class TagController {
     private final TagServiceImpl tagServiceImpl;
 
-    @Operation(summary = "Get a list of all existing tags")
+    @Operation(summary = "Get all tags", description = "Retrieves a paginated list of all available tags in the system.")
     @GetMapping("")
     public ResponseEntity<List<TagResponseDTO>> tagList(@RequestParam(defaultValue = "0") int pageNum) {
         return ResponseEntity.status(HttpStatus.OK).body(tagServiceImpl.getAllTags(pageNum));
     }
 
-    @Operation(summary = "Create a new tag")
+    @Operation(summary = "Create a tag", description = "Creates a new tag. Only users with ADMIN authority can perform this action.")
     @PreAuthorize("isFullyAuthenticated() && hasAuthority('ADMIN')")
     @PostMapping("")
     public ResponseEntity<String> createTag(@RequestBody TagCreationRequestDTO tag) {

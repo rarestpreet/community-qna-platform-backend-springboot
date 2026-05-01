@@ -19,28 +19,28 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class QuestionPostResponseDTO {
-    @Schema(description = "unique identifier of the post")
+    @Schema(description = "The unique identifier of the question post")
     private Long postId;
 
-    @Schema(description = "title of the post")
+    @Schema(description = "The title of the question")
     private String title;
 
-    @Schema(description = "content of the post")
+    @Schema(description = "The detailed content of the question")
     private String body;
 
     @Schema(description = "list of answers to the question")
     private List<PostAnswerResponseDTO> answers;
 
-    @Schema(description = "unique identifier of the post's author")
+    @Schema(description = "The username of the question's author")
     private String authorUsername;
 
     @Schema(description = "list of tags associated with the post")
     private List<TagResponseDTO> tags;
 
-    @Schema(description = "indicates if the current user has voted on this post")
+    @Schema(description = "Indicates if the currently authenticated user has cast a vote on this question")
     private boolean voted;
 
-    @Schema(description = "indicates the vote type casted by user on post")
+    @Schema(description = "The specific type of vote cast by the current user (if voted is true)")
     private VoteType voteType;
 
     @Schema(description = "list of comments on the post")
@@ -50,13 +50,13 @@ public class QuestionPostResponseDTO {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "status of the post")
+    @Schema(description = "The current status of the question (e.g., OPEN, ANSWERED, CLOSED)")
     private PostStatus postStatus;
 
-    @Schema(description = "total vote score of the post")
+    @Schema(description = "The net vote score of the question (upvotes minus downvotes)")
     private int score;
 
-    @Schema(description = "indicate if curr User can modify the answer")
+    @Schema(description = "Indicates whether the current authenticated user has permission to edit or delete this question")
     private boolean operable;
 
     public QuestionPostResponseDTO(Long postId, String authorUsername, String title, String body, int score, LocalDateTime updatedAt, PostStatus postStatus) {

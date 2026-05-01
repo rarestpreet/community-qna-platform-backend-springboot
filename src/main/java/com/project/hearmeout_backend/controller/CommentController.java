@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
-@Tag(name = "Comment CRUD APIs")
+@Tag(name = "Comment Management", description = "Endpoints for creating, updating, and deleting comments on posts")
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("isFullyAuthenticated() && !hasAuthority('ADMIN')")
 public class CommentController {
 
     private final CommentServiceImpl commentServiceImpl;
 
-    @Operation(summary = "Post a new comment on a post")
+    @Operation(summary = "Add a comment", description = "Creates a new comment on a specific post. The user must be authenticated.")
     @PostMapping("")
     public ResponseEntity<@NonNull String> postComment(
             @Valid @RequestBody CommentRequestDTO commentRequestDTO,
@@ -41,7 +41,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Comment was added successfully");
     }
 
-    @Operation(summary = "Delete an existing comment")
+    @Operation(summary = "Delete a comment", description = "Removes an existing comment by its ID. Only the author of the comment can delete it.")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<@NonNull String> deleteComment(
             @PathVariable Long commentId,
@@ -52,7 +52,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK).body("Comment was deleted successfully");
     }
 
-    @Operation(summary = "Update an existing comment body")
+    @Operation(summary = "Update a comment", description = "Modifies the content of an existing comment. Only the author can update their own comment.")
     @PutMapping("/{commentId}")
     public ResponseEntity<@NonNull String> updateComment(
             @PathVariable Long commentId,

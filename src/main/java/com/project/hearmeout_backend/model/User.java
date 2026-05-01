@@ -31,9 +31,9 @@ public class User extends BaseModel {
     private int reputation = 0;
 
     private String emailVerifyOtp;
-    private LocalDateTime emailVerifyOtpExpireAt;
+    private Long emailVerifyOtpExpireAt;
     private String passwordChangeOtp;
-    private LocalDateTime passwordOtpExpireAt;
+    private Long passwordOtpExpireAt;
 
     @Builder.Default
     private boolean isAccountVerified = false;

@@ -17,16 +17,16 @@ public class QuestionSubmitRequestDTO {
 
     @NotBlank(message = "Question title is required")
     @Size(min = 15, max = 150, message = "Question must be 15 to 150 characters long")
-    @Schema(description = "post (question) brief info")
+    @Schema(description = "A concise summary of the question being asked")
     private String title;
 
     @NotBlank(message = "Description is required")
     @Size(min = 50, max = 500, message = "Describe question in 50 to 500 characters")
-    @Schema(description = "post (question) content")
+    @Schema(description = "The detailed content of the question, providing context and specifics")
     private String body;
 
     @NotEmpty(message = "At least one tag is required")
     @Size(min = 1, max = 10, message = "Must contain 1 to 10 tags")
-    @Schema(description = "tags associated with post (question)")
+    @Schema(description = "A list of tag IDs categorizing the question")
     private List<Long> tagIds;
 }

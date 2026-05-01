@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 @Builder
 public class UserCommentResponseDTO {
 
-    @Schema(description = "content of the comment")
+    @Schema(description = "The text content of the user's comment")
     private String body;
 
-    @Schema(description = "unique identifier of the associated post (for navigation)")
+    @Schema(description = "The ID of the parent post, used for navigation")
     private Long navigationPostId;
 
-    @Schema(description = "glimpse of content of associated post")
+    @Schema(description = "A snippet or glimpse of the content of the associated post")
     private String postContent;
 
     @Schema(description = "timestamp of the last update")

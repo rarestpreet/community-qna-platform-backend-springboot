@@ -9,12 +9,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @AllArgsConstructor
 @Builder
 public class TagResponseDTO {
-    @Schema(description = "unique identifier of the tag")
+    @Schema(description = "The unique identifier of the tag")
     private Long tagId;
 
-    @Schema(description = "name of the tag")
+    @Schema(description = "The concise name of the tag")
     private String name;
 
-    @Schema(description = "description of the tag")
+    @Schema(description = "A brief description explaining the tag's purpose")
     private String description;
 }

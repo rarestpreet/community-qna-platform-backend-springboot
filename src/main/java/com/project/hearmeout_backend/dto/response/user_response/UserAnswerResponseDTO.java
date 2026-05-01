@@ -14,22 +14,22 @@ import java.time.LocalDateTime;
 @Builder
 public class UserAnswerResponseDTO {
 
-    @Schema(description = "content of the answer")
+    @Schema(description = "The detailed content of the user's answer")
     private String body;
 
-    @Schema(description = "status of the answer")
+    @Schema(description = "The current status of the answer (e.g., ACCEPTED)")
     private PostStatus postStatus;
 
-    @Schema(description = "total vote score of the answer")
+    @Schema(description = "The net vote score of the answer")
     private int score;
 
     @Schema(description = "timestamp of when the answer was created")
     @JsonFormat(pattern = "dd-MM-yyy")
     private LocalDateTime updatedAt;
 
-    @Schema(description = "postId of question associated with the answer (for navigation)")
+    @Schema(description = "The ID of the parent question post, used for navigation")
     private Long navigationPostId;
 
-    @Schema(description = "title of question associated with answer")
+    @Schema(description = "The title of the parent question, providing context for the answer")
     private String parentPostTitle;
 }

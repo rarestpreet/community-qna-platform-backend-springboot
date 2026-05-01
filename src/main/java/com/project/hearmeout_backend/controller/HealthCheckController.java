@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -22,21 +25,24 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/health")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Health Check APIs", description = "Endpoints for system health and configuration checks (Admin only)")
+@SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("isFullyAuthenticated() && hasAuthority('ADMIN')")
 public class HealthCheckController {
 
     private final CookieProperties cookieProperties;
 
+    @Operation(summary = "Check system status", description = "Returns basic system status and current timestamp.")
     @GetMapping
     public ResponseEntity<?> healthCheck() {
         log.info("Health check successful");
 
         return ResponseEntity.ok(Map.of(
                 "status", "UP",
-                "timestamp", System.currentTimeMillis()
-        ));
+                "timestamp", System.currentTimeMillis()));
     }
 
+    @Operation(summary = "Add CORS test cookie", description = "Sets a test cookie to verify CORS and cookie configuration.")
     @PostMapping("/cors")
     public ResponseEntity<?> addCookie() {
         ResponseCookie cookie = ResponseCookie.from("corsCheck", "Working")
@@ -52,6 +58,7 @@ public class HealthCheckController {
                 .body("cookie sent");
     }
 
+    @Operation(summary = "Check CORS status", description = "Checks if the previously set CORS test cookie is received correctly.")
     @GetMapping("/cors")
     public ResponseEntity<?> corsHealthCheck(HttpServletRequest request) {
         String cookieValue = "";
@@ -59,8 +66,8 @@ public class HealthCheckController {
             for (Cookie cookie : request.getCookies()) {
                 if (cookie.getName().equals("corsCheck")) {
 
-                    if(cookie.getValue().isEmpty()){
-                       break;
+                    if (cookie.getValue().isEmpty()) {
+                        break;
                     }
                     cookieValue = cookie.getValue();
 
@@ -68,8 +75,7 @@ public class HealthCheckController {
                             "status", "CORS UP",
                             "cookies", cookieValue,
                             "origin", request.getHeader("Origin"),
-                            "timestamp", System.currentTimeMillis()
-                    ));
+                            "timestamp", System.currentTimeMillis()));
                 }
             }
         }
@@ -78,7 +84,6 @@ public class HealthCheckController {
                 "status", "CORS DOWN",
                 "cookies", "",
                 "origin", request.getHeader("Origin"),
-                "timestamp", System.currentTimeMillis()
-        ));
+                "timestamp", System.currentTimeMillis()));
     }
 }

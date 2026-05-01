@@ -13,7 +13,7 @@ import lombok.Setter;
 public class AnswerSubmitRequestDTO {
 
     @NotBlank(message = "Answer is required")
-    @Schema(description = "post (answer) content")
+    @Schema(description = "The main content of the answer, explaining the solution or providing information")
     @Size(min = 20, max = 500, message = "Describe question in 20 to 500 characters")
     private String body;
 }
